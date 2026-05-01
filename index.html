@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alexis Guliana — Directeur Marketing Externalisé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --noir:    #171210;
+  --noir2:   #1E1A16;
+  --noir3:   #252017;
+  --or:      #C9A84C;
+  --or-pale: #D4B96A;
+  --or-dim:  #8A6E2F;
+  --creme:   #F2EDE4;
+  --blanc:   #FFFFFF;
+  --gris:    #9A9080;
+  --gris-l:  #E0DBD4;
+  --gris-lg: #F7F4F0;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-light: 'Cormorant Garamond', Georgia, serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--noir);
+  color: var(--creme);
+  overflow-x: hidden;
+}
+
+/* Custom cursor — desktop only */
+/* ── Custom Cursor — desktop/mouse only ─────────────────────────────────── */
+#cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--or);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+  mix-blend-mode: difference;
+  display: none;
+}
+#cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease-out;
+  display: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+  #cursor { display: block; }
+  #cursor-ring { display: block; }
+}
+
+/* ── Navigation ─────────────────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1.5rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.4s, padding 0.4s, backdrop-filter 0.4s;
+}
+nav.scrolled {
+  background: rgba(23,18,16,0.92);
+  backdrop-filter: blur(20px);
+  padding: 1rem 4rem;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.nav-logo {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--creme);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+.nav-logo span { color: var(--or); font-style: italic; }
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 0.78rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gris);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--or); }
+.nav-cta {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--noir);
+  background: var(--or);
+  padding: 0.65rem 1.6rem;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s;
+  font-weight: 500;
+}
+.nav-cta:hover { background: var(--or-pale); transform: translateY(-1px); }
+a, button, .nav-cta, .btn-primary, .btn-secondary, .cas-link, .hamburger { cursor: pointer; }
+@media (hover: hover) and (pointer: fine) {
+  a, button, .nav-cta, .btn-primary, .btn-secondary, .cas-link, .hamburger { cursor: none; }
+}
+
+/* Hamburger */
+.hamburger { 
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.hamburger span {
+  display: block;
+  width: 24px; height: 1.5px;
+  background: var(--creme);
+  transition: all 0.3s;
+}
+.hamburger.active span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--noir);
+  z-index: 999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.mobile-menu.open { opacity: 1; }
+.mobile-menu a {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  color: var(--creme);
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.3s;
+}
+.mobile-menu a:hover { color: var(--or); }
+
+/* ── Pages / Sections ───────────────────────────────────────────────────────── */
+.page { min-height: 100vh; }
+
+/* ── SECTION: HERO ──────────────────────────────────────────────────────────── */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 6rem 4rem 0;
+}
+
+/* Particle canvas */
+#particle-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0.35;
+}
+
+/* Grid overlay */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+
+/* Gold line left */
+.hero-accent {
+  position: absolute;
+  left: 0; top: 15%; bottom: 15%;
+  width: 3px;
+  background: linear-gradient(to bottom, transparent, var(--or), transparent);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+
+.hero-overline {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.hero-name {
+  font-family: var(--font-serif);
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 0.95;
+  color: var(--creme);
+  margin-bottom: 0.3rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--or);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+
+.hero-divider {
+  width: 60px; height: 1px;
+  background: var(--or);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+}
+
+.hero-desc {
+  font-family: var(--font-light);
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: var(--gris);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.1s forwards;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.3s forwards;
+}
+
+.btn-primary {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--noir);
+  background: var(--or);
+  padding: 1rem 2.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  font-family: var(--font-body);
+}
+.btn-primary:hover {
+  background: var(--or-pale);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(201,168,76,0.25);
+}
+
+.btn-secondary {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gris);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(154,144,128,0.3);
+  padding-bottom: 2px;
+  transition: color 0.3s, border-color 0.3s;
+  font-family: var(--font-body);
+}
+.btn-secondary:hover { color: var(--or); border-color: var(--or); }
+
+/* Stats */
+.hero-stats {
+  position: absolute;
+  right: 4rem;
+  bottom: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  opacity: 0;
+  animation: fadeLeft 0.8s 1.5s forwards;
+}
+.stat-item { text-align: right; }
+.stat-num {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--or);
+  line-height: 1;
+  display: block;
+}
+.stat-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gris);
+  margin-top: 0.25rem;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 2s forwards;
+}
+.scroll-line {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, var(--or), transparent);
+  animation: scrollPulse 2s infinite;
+}
+.scroll-text {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gris);
+}
+
+/* ── SECTION: ETAPES ────────────────────────────────────────────────────────── */
+#etapes {
+  padding: 8rem 4rem;
+  background: var(--noir2);
+  position: relative;
+}
+.section-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1rem;
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 0.5rem;
+  line-height: 1.1;
+}
+.section-title em { color: var(--or); font-style: italic; }
+.section-sub {
+  font-family: var(--font-light);
+  font-size: 1.1rem;
+  color: var(--gris);
+  margin-bottom: 4rem;
+}
+
+.etapes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-top: 3rem;
+}
+.etape-card {
+  padding: 2.5rem 2rem;
+  border-left: 1px solid rgba(201,168,76,0.15);
+  position: relative;
+  transition: background 0.3s;
+}
+.etape-card:hover { background: rgba(201,168,76,0.04); }
+.etape-card:first-child { border-left: none; }
+.etape-num {
+  font-family: var(--font-serif);
+  font-size: 4rem;
+  font-weight: 900;
+  color: rgba(201,168,76,0.12);
+  line-height: 1;
+  margin-bottom: 1rem;
+  transition: color 0.3s;
+}
+.etape-card:hover .etape-num { color: rgba(201,168,76,0.25); }
+.etape-badge {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.75rem;
+}
+.etape-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 0.75rem;
+}
+.etape-desc {
+  font-size: 0.9rem;
+  color: var(--gris);
+  line-height: 1.7;
+}
+.etape-price {
+  margin-top: 1.5rem;
+  font-size: 0.72rem;
+  color: var(--or-dim);
+  letter-spacing: 0.08em;
+}
+
+/* ── SECTION: POUR QUI ──────────────────────────────────────────────────────── */
+#pour-qui {
+  padding: 8rem 4rem;
+  background: var(--noir);
+}
+.pour-qui-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 3rem;
+}
+.profil-card {
+  padding: 3rem 2.5rem;
+  background: var(--noir2);
+  border-top: 2px solid var(--or);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.profil-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.profil-icon {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+.profil-type {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.75rem;
+}
+.profil-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 1rem;
+}
+.profil-desc {
+  font-size: 0.92rem;
+  color: var(--gris);
+  line-height: 1.7;
+}
+
+/* ── SECTION: CAS APERCU ────────────────────────────────────────────────────── */
+#cas-apercu {
+  padding: 8rem 4rem;
+  background: var(--noir3);
+}
+.cas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.cas-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--noir2);
+  cursor: pointer;
+  transition: transform 0.4s;
+}
+.cas-card:hover { transform: translateY(-4px); }
+.cas-card-inner { padding: 2.5rem 2rem; }
+.cas-num {
+  font-family: var(--font-serif);
+  font-size: 5rem;
+  font-weight: 900;
+  color: rgba(201,168,76,0.08);
+  position: absolute;
+  top: -0.5rem;
+  right: 1rem;
+  line-height: 1;
+}
+.cas-sector {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1rem;
+}
+.cas-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 0.5rem;
+}
+.cas-title em { color: var(--or); font-style: italic; }
+.cas-desc {
+  font-size: 0.88rem;
+  color: var(--gris);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+.cas-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+.cas-tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gris);
+  border: 1px solid rgba(154,144,128,0.25);
+  padding: 0.25rem 0.6rem;
+}
+.cas-honoraires {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--or);
+  font-weight: 700;
+}
+.cas-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--or);
+  text-decoration: none;
+  margin-top: 1.5rem;
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+  padding-bottom: 2px;
+  transition: border-color 0.3s;
+}
+.cas-link:hover { border-color: var(--or); }
+
+/* ── SECTION: CTA FINAL HERO ────────────────────────────────────────────────── */
+#cta-final {
+  padding: 8rem 4rem;
+  background: var(--noir);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+#cta-final::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1.5rem;
+}
+.cta-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 1rem;
+  line-height: 1.1;
+}
+.cta-title em { color: var(--or); font-style: italic; }
+.cta-sub {
+  font-family: var(--font-light);
+  font-size: 1.2rem;
+  color: var(--gris);
+  margin-bottom: 3rem;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE: L'OFFRE
+══════════════════════════════════════════════════════════════ */
+#offre { display: none; }
+
+.offre-hero {
+  min-height: 45vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 9rem 4rem 4rem;
+  background: var(--noir);
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+.page-hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 900;
+  color: var(--creme);
+  line-height: 1;
+}
+.page-hero-title em { color: var(--or); font-style: italic; }
+.page-hero-sub {
+  font-family: var(--font-light);
+  font-size: 1.2rem;
+  color: var(--gris);
+  margin-top: 1rem;
+  max-width: 500px;
+}
+
+.offre-etapes { padding: 6rem 4rem; background: var(--noir2); }
+
+.etape-full {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 3rem;
+  padding: 3rem 0;
+  border-bottom: 1px solid rgba(201,168,76,0.08);
+  align-items: start;
+}
+.etape-full:last-child { border-bottom: none; }
+.etape-full-num {
+  font-family: var(--font-serif);
+  font-size: 6rem;
+  font-weight: 900;
+  color: rgba(201,168,76,0.15);
+  line-height: 1;
+}
+.etape-full-content {}
+.etape-full-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.5rem;
+}
+.etape-full-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 1rem;
+}
+.etape-full-desc {
+  font-size: 0.95rem;
+  color: var(--gris);
+  line-height: 1.8;
+  max-width: 600px;
+}
+
+/* Modules */
+.offre-modules { padding: 6rem 4rem; background: var(--noir); }
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(201,168,76,0.08);
+  margin-top: 3rem;
+}
+.module-famille {
+  background: var(--noir2);
+  padding: 2.5rem 2rem;
+}
+.famille-color { height: 3px; margin-bottom: 1.5rem; }
+.famille-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1.5rem;
+}
+.module-list { list-style: none; }
+.module-list li {
+  font-size: 0.9rem;
+  color: var(--creme);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(201,168,76,0.06);
+  line-height: 1.5;
+}
+.module-list li:last-child { border-bottom: none; }
+
+/* Tarif */
+.offre-tarif {
+  padding: 5rem 4rem;
+  background: var(--noir2);
+  text-align: center;
+}
+.tarif-box {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid rgba(201,168,76,0.2);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tarif-box .btn-primary {
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+}
+.tarif-text {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-style: italic;
+  color: var(--creme);
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+.tarif-sub { font-size: 0.88rem; color: var(--gris); margin-bottom: 2rem; }
+
+/* FAQ */
+.offre-faq { padding: 6rem 4rem; background: var(--noir); }
+.faq-list { max-width: 700px; margin-top: 3rem; }
+.faq-item {
+  border-bottom: 1px solid rgba(201,168,76,0.08);
+}
+.faq-q {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1.5rem 0;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  color: var(--creme);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.faq-q:hover { color: var(--or); }
+.faq-arrow {
+  color: var(--or);
+  font-size: 1.2rem;
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+.faq-item.open .faq-arrow { transform: rotate(45deg); }
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  font-size: 0.92rem;
+  color: var(--gris);
+  line-height: 1.8;
+}
+.faq-a-inner { padding-bottom: 1.5rem; }
+.faq-item.open .faq-a { max-height: 300px; }
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE: MANIFESTE
+══════════════════════════════════════════════════════════════ */
+#manifeste { display: none; }
+
+.manifeste-hero {
+  min-height: 55vh;
+  display: flex;
+  align-items: center;
+  padding: 9rem 4rem 5rem;
+  background: var(--noir);
+  position: relative;
+  overflow: hidden;
+}
+.manifeste-hero::before {
+  content: '';
+  position: absolute;
+  right: -10%;
+  top: -20%;
+  width: 60vw; height: 60vw;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.06);
+}
+.manifeste-hero::after {
+  content: '';
+  position: absolute;
+  right: -5%;
+  top: -10%;
+  width: 40vw; height: 40vw;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.04);
+}
+.manifeste-conviction {
+  max-width: 750px;
+  position: relative;
+  z-index: 1;
+}
+.conviction-quote {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  color: var(--creme);
+  line-height: 1.3;
+  margin-bottom: 2rem;
+}
+.conviction-quote em { color: var(--or); font-style: italic; }
+.conviction-text {
+  font-family: var(--font-light);
+  font-size: 1.15rem;
+  color: var(--gris);
+  line-height: 1.8;
+}
+
+.manifeste-methode {
+  padding: 6rem 4rem;
+  background: var(--noir2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.methode-text {}
+.methode-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 2rem;
+  line-height: 1.2;
+}
+.methode-title em { color: var(--or); font-style: italic; }
+.methode-para {
+  font-size: 0.95rem;
+  color: var(--gris);
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
+}
+.methode-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+.ms-item {}
+.ms-num {
+  font-family: var(--font-serif);
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: var(--or);
+  line-height: 1;
+}
+.ms-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gris);
+  margin-top: 0.25rem;
+}
+
+.manifeste-competences {
+  padding: 6rem 4rem;
+  background: var(--noir);
+}
+.comp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2px;
+  background: rgba(201,168,76,0.06);
+  margin-top: 3rem;
+}
+.comp-card {
+  background: var(--noir);
+  padding: 2.5rem;
+}
+.comp-title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--creme);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(201,168,76,0.15);
+}
+.comp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.comp-tag {
+  font-size: 0.75rem;
+  color: var(--gris);
+  background: rgba(201,168,76,0.06);
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(201,168,76,0.1);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE: RÉALISATIONS
+══════════════════════════════════════════════════════════════ */
+#realisations { display: none; }
+
+.real-hero {
+  min-height: 40vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 9rem 4rem 4rem;
+  background: var(--noir);
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+.real-note {
+  font-size: 0.78rem;
+  color: var(--gris);
+  font-style: italic;
+  margin-top: 1rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.cas-detail { padding: 6rem 4rem; border-bottom: 1px solid rgba(201,168,76,0.06); background: var(--noir); }
+.cas-detail.alt { background: var(--noir2); }
+.cas-detail-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3rem;
+  align-items: start;
+  margin-bottom: 3rem;
+}
+.cas-detail-meta {}
+.cas-detail-sector {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.75rem;
+}
+.cas-detail-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  color: var(--creme);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.cas-detail-title em { color: var(--or); font-style: italic; }
+.cas-detail-subtitle {
+  font-family: var(--font-light);
+  font-size: 1.1rem;
+  color: var(--gris);
+  margin-top: 0.75rem;
+}
+.cas-detail-honoraires {
+  text-align: right;
+}
+.honoraires-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gris);
+  margin-bottom: 0.25rem;
+}
+.honoraires-val {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--or);
+}
+
+.cas-detail-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+.cas-detail-section-title {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1rem;
+}
+.cas-detail-text {
+  font-size: 0.92rem;
+  color: var(--gris);
+  line-height: 1.85;
+}
+
+.cas-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(201,168,76,0.08);
+}
+.kpi-item {}
+.kpi-val {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--or);
+}
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--gris);
+  margin-top: 0.25rem;
+  line-height: 1.4;
+}
+
+.real-cta {
+  padding: 6rem 4rem;
+  background: var(--noir);
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE: CONTACT
+══════════════════════════════════════════════════════════════ */
+#contact { display: none; }
+
+.contact-wrap {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-top: 80px;
+}
+.contact-left {
+  padding: 6rem 4rem;
+  background: var(--noir2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.contact-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  color: var(--creme);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+.contact-title em { color: var(--or); font-style: italic; }
+.contact-desc {
+  font-family: var(--font-light);
+  font-size: 1.1rem;
+  color: var(--gris);
+  line-height: 1.8;
+  margin-bottom: 3rem;
+}
+.contact-info { display: flex; flex-direction: column; gap: 1.5rem; }
+.contact-info-item {}
+.ci-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.25rem;
+}
+.ci-val {
+  font-size: 0.95rem;
+  color: var(--creme);
+}
+.ci-val a { color: var(--creme); text-decoration: none; }
+.ci-val a:hover { color: var(--or); }
+
+.contact-right {
+  padding: 6rem 4rem;
+  background: var(--noir);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.contact-form { max-width: 480px; }
+.form-group { margin-bottom: 1.5rem; }
+.form-label {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 0.6rem;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--creme);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  padding: 0.9rem 1.1rem;
+  outline: none;
+  transition: border-color 0.3s, background 0.3s;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--or);
+  background: rgba(201,168,76,0.04);
+}
+.form-input::placeholder, .form-textarea::placeholder {
+  color: rgba(154,144,128,0.4);
+}
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.form-select option { background: var(--noir2); color: var(--creme); }
+@media (max-width: 1024px) {
+  .form-select { appearance: auto; -webkit-appearance: auto; background: var(--noir2); color: var(--creme); }
+}
+.form-textarea { min-height: 120px; resize: vertical; }
+.form-note {
+  font-size: 0.78rem;
+  color: var(--gris);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+.form-submit {
+  width: 100%;
+  padding: 1.1rem;
+  background: var(--or);
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--noir);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 0.5rem;
+}
+.form-submit:hover { background: var(--or-pale); transform: translateY(-1px); }
+
+/* ── Footer ──────────────────────────────────────────────────────────────────── */
+footer {
+  padding: 3rem 4rem;
+  background: var(--noir2);
+  border-top: 1px solid rgba(201,168,76,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-brand {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--creme);
+}
+.footer-brand span { color: var(--or); font-style: italic; }
+.footer-legal {
+  font-size: 0.72rem;
+  color: var(--gris);
+  text-align: center;
+}
+.footer-links {
+  display: flex;
+  gap: 1.5rem;
+}
+.footer-links a {
+  font-size: 0.72rem;
+  color: var(--gris);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.footer-links a:hover { color: var(--or); }
+
+/* ── Reveal animations ──────────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.4; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.1); }
+}
+
+/* ── Home page wrapper ───────────────────────────────────────────────────────── */
+#home { display: block; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  nav { padding: 1.5rem 2.5rem; }
+  nav.scrolled { padding: 1rem 2.5rem; }
+  .nav-links { display: none; }
+  .nav-cta { display: none; }
+  .hamburger {  display: flex; }
+  .mobile-menu { display: flex; }
+
+  #hero { padding: 6rem 1.5rem 0; }
+  .hero-stats { display: none; }
+  .etapes-grid { grid-template-columns: repeat(2, 1fr); }
+  .pour-qui-grid { grid-template-columns: 1fr; gap: 2px; }
+  .cas-grid { grid-template-columns: 1fr; }
+  #etapes, #pour-qui, #cas-apercu, #cta-final { padding: 5rem 2.5rem; }
+  .modules-grid { grid-template-columns: repeat(2, 1fr); }
+  .cas-detail-body { grid-template-columns: 1fr; gap: 2rem; }
+  .cas-detail-header { grid-template-columns: 1fr; }
+  .cas-detail-honoraires { text-align: left; }
+  .cas-kpis { grid-template-columns: repeat(2, 1fr); }
+  .contact-wrap { grid-template-columns: 1fr; }
+  .contact-left, .contact-right { padding: 4rem 2.5rem; }
+  .manifeste-methode { grid-template-columns: 1fr; gap: 3rem; padding: 5rem 2.5rem; }
+  .comp-grid { grid-template-columns: 1fr; }
+  .offre-etapes, .offre-modules, .offre-tarif, .offre-faq { padding: 5rem 2.5rem; }
+  .etape-full { grid-template-columns: 80px 1fr; gap: 1.5rem; }
+  .offre-hero, .real-hero { padding: 7rem 2.5rem 3rem; }
+  .manifeste-hero, .manifeste-conviction { padding: 7rem 2.5rem 3rem; }
+  .real-cta { padding: 5rem 2.5rem; }
+  footer { padding: 2.5rem; flex-direction: column; text-align: center; }
+  .cas-detail { padding: 4rem 2.5rem; }
+  .manifeste-competences { padding: 5rem 2.5rem; }
+  .tarif-box { padding: 2rem 1.5rem; }
+}
+
+@media (max-width: 640px) {
+  .etapes-grid { grid-template-columns: 1fr; }
+  .modules-grid { grid-template-columns: 1fr; }
+  .methode-stats { grid-template-columns: 1fr 1fr; }
+  .cas-kpis { grid-template-columns: 1fr; }
+  .etape-full { grid-template-columns: 1fr; }
+  .etape-full-num { font-size: 4rem; }
+  .hero-ctas { flex-direction: column; align-items: flex-start; }
+  #hero { padding: 5rem 1.2rem 0; }
+  .offre-hero, .real-hero { padding: 6rem 1.5rem 2.5rem; }
+  .manifeste-hero { padding: 6rem 1.5rem 2.5rem; }
+  #etapes, #pour-qui, #cas-apercu, #cta-final { padding: 4rem 1.5rem; }
+  .offre-etapes, .offre-modules, .offre-tarif, .offre-faq { padding: 4rem 1.5rem; }
+  .cas-detail { padding: 3rem 1.5rem; }
+  .contact-left, .contact-right { padding: 3rem 1.5rem; }
+  .tarif-box { padding: 1.5rem 1rem; }
+  .btn-primary { width: 100%; text-align: center; display: block; }
+}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── Navigation ────────────────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo" onclick="showPage('home'); return false;">
+    Alexis <span>Guliana</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home'); return false;">Accueil</a></li>
+    <li><a href="#" onclick="showPage('offre'); return false;">L'offre</a></li>
+    <li><a href="#" onclick="showPage('manifeste'); return false;">Manifeste</a></li>
+    <li><a href="#" onclick="showPage('realisations'); return false;">Réalisations</a></li>
+    <li><a href="#" onclick="showPage('contact'); return false;">Contact</a></li>
+  </ul>
+  <a href="#" class="nav-cta" onclick="showPage('contact'); return false;">Soumettre mon projet</a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#" onclick="showPage('home'); toggleMenu(); return false;">Accueil</a>
+  <a href="#" onclick="showPage('offre'); toggleMenu(); return false;">L'offre</a>
+  <a href="#" onclick="showPage('manifeste'); toggleMenu(); return false;">Manifeste</a>
+  <a href="#" onclick="showPage('realisations'); toggleMenu(); return false;">Réalisations</a>
+  <a href="#" onclick="showPage('contact'); toggleMenu(); return false;">Contact</a>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════════════════════════════ -->
+<div id="home">
+
+  <!-- Hero -->
+  <section id="hero" class="page">
+    <canvas id="particle-canvas"></canvas>
+    <div class="hero-grid"></div>
+    <div class="hero-accent"></div>
+
+    <div class="hero-content">
+      <p class="hero-overline">Portfolio · Marketing Stratégique & Opérationnel</p>
+      <h1 class="hero-name">Alexis<br>Guliana</h1>
+      <p class="hero-title">Directeur marketing externalisé,<br>architecte de projets.</p>
+      <div class="hero-divider"></div>
+      <p class="hero-desc">Je construis des systèmes marketing qui transforment votre visibilité en chiffre d'affaires — structurés, mesurables, durables.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn-primary" onclick="showPage('contact'); return false;">Soumettre mon projet</a>
+        <a href="#" class="btn-secondary" onclick="showPage('offre'); return false;">Découvrir l'offre →</a>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num counter" data-target="80">0</span><span class="stat-num" style="color:var(--or);">+</span>
+        <p class="stat-label">Marques accompagnées</p>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">4</span>
+        <p class="stat-label">Secteurs maîtrisés</p>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">100%</span>
+        <p class="stat-label">Remote — France entière</p>
+      </div>
+    </div>
+
+    <div class="scroll-indicator">
+      <div class="scroll-line"></div>
+      <span class="scroll-text">Scroll</span>
+    </div>
+  </section>
+
+  <!-- 4 Étapes -->
+  <section id="etapes">
+    <div class="reveal"><p class="section-label">Mon approche</p></div>
+    <div class="reveal reveal-delay-1"><h2 class="section-title">Une intervention structurée<br>en <em>4 étapes claires.</em></h2></div>
+    <div class="etapes-grid">
+      <div class="etape-card reveal reveal-delay-1">
+        <div class="etape-num">01</div>
+        <p class="etape-badge">Sans engagement</p>
+        <h3 class="etape-title">Audit Initial</h3>
+        <p class="etape-desc">Je prends le temps de comprendre votre situation réelle — marché, positionnement, actions existantes, blocages. Un rapport structuré vous est remis.</p>
+        <p class="etape-price">Première étape naturelle</p>
+      </div>
+      <div class="etape-card reveal reveal-delay-2">
+        <div class="etape-num">02</div>
+        <p class="etape-badge">Sur mesure</p>
+        <h3 class="etape-title">Projet Sur Mesure</h3>
+        <p class="etape-desc">Je construis le périmètre avec vous selon vos priorités réelles — en sélectionnant les modules pertinents parmi 4 familles.</p>
+        <p class="etape-price">Devis personnalisé</p>
+      </div>
+      <div class="etape-card reveal reveal-delay-3">
+        <div class="etape-num">03</div>
+        <p class="etape-badge">Inclus dans le projet</p>
+        <h3 class="etape-title">Livrables de Clôture</h3>
+        <p class="etape-desc">Présentation, lettre de mission, dossier complet et suivi 30 jours. Vous repartez avec un système documenté, prêt à déployer.</p>
+        <p class="etape-price">Aucun supplément</p>
+      </div>
+      <div class="etape-card reveal reveal-delay-4">
+        <div class="etape-num">04</div>
+        <p class="etape-badge">Sans engagement long terme</p>
+        <h3 class="etape-title">Pilotage Mensuel</h3>
+        <p class="etape-desc">Je reste à bord pour piloter, ajuster et faire évoluer la stratégie en fonction des résultats. Préavis d'un mois.</p>
+        <p class="etape-price">À partir de 500 €/mois</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pour qui -->
+  <section id="pour-qui">
+    <div class="reveal"><p class="section-label">Pour qui ?</p></div>
+    <div class="reveal reveal-delay-1"><h2 class="section-title">Vous vous reconnaissez<br>dans cette situation ?</h2></div>
+    <div class="reveal reveal-delay-2"><p class="section-sub">Je travaille avec des dirigeants qui savent qu'ils ont besoin d'une stratégie — pas d'actions isolées.</p></div>
+    <div class="pour-qui-grid">
+      <div class="profil-card reveal reveal-delay-1">
+        <div class="profil-icon">◈</div>
+        <p class="profil-type">PME / TPE</p>
+        <h3 class="profil-title">Vous faites du marketing sans réelle stratégie</h3>
+        <p class="profil-desc">Vos actions manquent de cohérence. Votre visibilité ne se transforme pas en chiffre d'affaires. Vous n'avez pas les ressources pour un directeur marketing à temps plein.</p>
+      </div>
+      <div class="profil-card reveal reveal-delay-2">
+        <div class="profil-icon">◈</div>
+        <p class="profil-type">Consultant / Indépendant</p>
+        <h3 class="profil-title">Vous voulez structurer votre croissance</h3>
+        <p class="profil-desc">Vous avez une expertise reconnue mais votre acquisition client repose sur le bouche-à-oreille. Vous voulez rendre votre développement prévisible et moins aléatoire.</p>
+      </div>
+      <div class="profil-card reveal reveal-delay-3">
+        <div class="profil-icon">◈</div>
+        <p class="profil-type">Créateur d'activité</p>
+        <h3 class="profil-title">Vous démarrez et voulez poser les bonnes bases</h3>
+        <p class="profil-desc">Vous lancez votre activité et vous savez que le positionnement, le message et le système d'acquisition doivent être construits dès le départ — pas rafistolés ensuite.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Aperçu cas -->
+  <section id="cas-apercu">
+    <div class="reveal"><p class="section-label">Réalisations</p></div>
+    <div class="reveal reveal-delay-1"><h2 class="section-title">Trois projets.<br><em>Trois univers.</em></h2></div>
+    <div class="cas-grid">
+      <div class="cas-card reveal reveal-delay-1">
+        <div class="cas-num">01</div>
+        <div class="cas-card-inner">
+          <p class="cas-sector">Artisanat · Normandie</p>
+          <h3 class="cas-title">Brasserie Artisanale<br><em>Normande.</em></h3>
+          <p class="cas-desc">Structurer et lancer une marque de bière artisanale dans le Pays d'Auge — de zéro jusqu'au plan moyen terme 12–36 mois.</p>
+          <div class="cas-tags">
+            <span class="cas-tag">Stratégie de marque</span>
+            <span class="cas-tag">Plan 12 mois</span>
+            <span class="cas-tag">B2B caves</span>
+            <span class="cas-tag">Digital local</span>
+          </div>
+          <div class="cas-honoraires">11 400 € HT</div>
+          <a href="#" class="cas-link" onclick="showPage('realisations'); return false;">Voir l'étude de cas →</a>
+        </div>
+      </div>
+      <div class="cas-card reveal reveal-delay-2">
+        <div class="cas-num">02</div>
+        <div class="cas-card-inner">
+          <p class="cas-sector">Palace · Paris 9e</p>
+          <h3 class="cas-title">Hôtel<br><em>Caillebotte.</em></h3>
+          <p class="cas-desc">Repositionner un palace parisien pour attirer les nouvelles clientèles du luxe contemporain — UHNW, Gen Z, Asie.</p>
+          <div class="cas-tags">
+            <span class="cas-tag">Refonte identité</span>
+            <span class="cas-tag">Digital luxe</span>
+            <span class="cas-tag">Presse internationale</span>
+            <span class="cas-tag">Stratégie Asie</span>
+          </div>
+          <div class="cas-honoraires">35 300 € HT</div>
+          <a href="#" class="cas-link" onclick="showPage('realisations'); return false;">Voir l'étude de cas →</a>
+        </div>
+      </div>
+      <div class="cas-card reveal reveal-delay-3">
+        <div class="cas-num">03</div>
+        <div class="cas-card-inner">
+          <p class="cas-sector">E-commerce · Industrie</p>
+          <h3 class="cas-title">ALMÉTAL<br><em>Scale & Hybride.</em></h3>
+          <p class="cas-desc">Transformer une croissance Covid exceptionnelle en position dominante durable — e-commerce, B2B et showroom en simultané.</p>
+          <div class="cas-tags">
+            <span class="cas-tag">SEO e-commerce</span>
+            <span class="cas-tag">Commercial B2B</span>
+            <span class="cas-tag">CRM</span>
+            <span class="cas-tag">Showroom IDF</span>
+          </div>
+          <div class="cas-honoraires">23 300 € HT</div>
+          <a href="#" class="cas-link" onclick="showPage('realisations'); return false;">Voir l'étude de cas →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+  <section id="cta-final">
+    <div class="reveal"><p class="cta-eyebrow">Passons à l'action</p></div>
+    <div class="reveal reveal-delay-1"><h2 class="cta-title">Démarrons la<br><em>conversation.</em></h2></div>
+    <div class="reveal reveal-delay-2"><p class="cta-sub">Parlez-moi de votre projet. Je réponds sous 48h.</p></div>
+    <div class="reveal reveal-delay-3">
+      <a href="#" class="btn-primary" onclick="showPage('contact'); return false;">Soumettre mon projet</a>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: L'OFFRE
+══════════════════════════════════════════════════════════════ -->
+<div id="offre">
+
+  <div class="offre-hero">
+    <div>
+      <p class="section-label">L'offre</p>
+      <h1 class="page-hero-title">Un système.<br><em>Pas des actions.</em></h1>
+      <p class="page-hero-sub">Je construis le périmètre avec vous selon vos priorités réelles — pas un catalogue de prestations.</p>
+    </div>
+  </div>
+
+  <div class="offre-etapes">
+    <p class="section-label">Les 4 étapes</p>
+    <div class="etape-full">
+      <div class="etape-full-num">01</div>
+      <div class="etape-full-content">
+        <p class="etape-full-label">Première étape · Sans engagement</p>
+        <h3 class="etape-full-title">Audit Initial & Rapport</h3>
+        <p class="etape-full-desc">Avant toute proposition, je prends le temps de comprendre votre situation. J'analyse votre positionnement, vos actions existantes et vos canaux actuels. Je vous remets un rapport d'audit structuré avec mes recommandations — que vous continuiez avec moi ou non.</p>
+      </div>
+    </div>
+    <div class="etape-full">
+      <div class="etape-full-num">02</div>
+      <div class="etape-full-content">
+        <p class="etape-full-label">Projet sur mesure · À partir de 1 500 €</p>
+        <h3 class="etape-full-title">Le Projet Sur Mesure</h3>
+        <p class="etape-full-desc">C'est le cœur de l'intervention. Selon les priorités identifiées lors de l'audit, nous construisons ensemble le périmètre adapté à votre situation en sélectionnant les modules pertinents parmi 4 familles. Pas de formule standard — un devis construit avec vous selon vos besoins réels.</p>
+      </div>
+    </div>
+    <div class="etape-full">
+      <div class="etape-full-num">03</div>
+      <div class="etape-full-content">
+        <p class="etape-full-label">Inclus dans le projet</p>
+        <h3 class="etape-full-title">Livrables de Clôture</h3>
+        <p class="etape-full-desc">À l'issue du projet, vous recevez un dossier complet qui formalise tout le travail réalisé — présentation PowerPoint, lettre de mission signée, dossier consolidé et email de suivi 30 jours après la livraison. Vous repartez avec un système documenté, prêt à être déployé ou confié à une équipe interne.</p>
+      </div>
+    </div>
+    <div class="etape-full">
+      <div class="etape-full-num">04</div>
+      <div class="etape-full-content">
+        <p class="etape-full-label">Mensuel · À partir de 500 €/mois</p>
+        <h3 class="etape-full-title">Pilotage Mensuel</h3>
+        <p class="etape-full-desc">Une fois le système en place, je reste disponible pour piloter, ajuster et faire évoluer la stratégie en fonction des résultats. Suivi mensuel des KPIs, ajustements stratégiques et point mensuel en visio ou présentiel. Contrat mensuel reconductible — préavis d'un mois, sans engagement long terme.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="offre-modules">
+    <p class="section-label">Les modules</p>
+    <h2 class="section-title" style="margin-bottom:0.5rem;">Un projet sur mesure — vous choisissez<br>ce dont vous avez besoin.</h2>
+    <p class="section-sub">Le devis est construit avec vous selon les modules sélectionnés. À partir de 1 500 €.</p>
+    <div class="modules-grid">
+      <div class="module-famille">
+        <div class="famille-color" style="background: var(--or);"></div>
+        <p class="famille-title">Stratégie</p>
+        <ul class="module-list">
+          <li>Stratégie & Plateforme de marque</li>
+          <li>Brief Direction Artistique</li>
+          <li>Plan d'action 6 ou 12 mois</li>
+          <li>Plan moyen terme 12–36 mois</li>
+        </ul>
+      </div>
+      <div class="module-famille">
+        <div class="famille-color" style="background: #6E9E8B;"></div>
+        <p class="famille-title">Acquisition & Visibilité</p>
+        <ul class="module-list">
+          <li>Calendrier éditorial</li>
+          <li>Community Management & Réseaux</li>
+          <li>Plan Relations Presse</li>
+          <li>Site web — développement & maintenance</li>
+        </ul>
+      </div>
+      <div class="module-famille">
+        <div class="famille-color" style="background: #9E7E5E;"></div>
+        <p class="famille-title">Conversion & Pilotage</p>
+        <ul class="module-list">
+          <li>CRM & Pipeline</li>
+          <li>Kit Commercial B2C / B2B</li>
+          <li>Tableau de bord KPIs</li>
+        </ul>
+      </div>
+      <div class="module-famille">
+        <div class="famille-color" style="background: #5E6E9E;"></div>
+        <p class="famille-title">Technologie</p>
+        <ul class="module-list">
+          <li>Assistant IA personnalisé</li>
+          <li>Agent IA spécialisé entraîné sur votre activité et vos process</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="offre-tarif">
+    <div class="tarif-box">
+      <p class="tarif-text">"Investissement sur mesure — construisons votre devis ensemble."</p>
+      <p class="tarif-sub">Pas de grille tarifaire affichée. Pas de formule standard. Le budget est construit selon votre contexte, vos priorités et les modules retenus.</p>
+      <a href="#" class="btn-primary" onclick="showPage('contact'); return false;">Soumettre mon projet</a>
+    </div>
+  </div>
+
+  <div class="offre-faq">
+    <p class="section-label">Questions fréquentes</p>
+    <h2 class="section-title" style="margin-bottom:2rem;">FAQ</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Quelle différence avec une agence ?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Une agence gère des prestations. Moi je construis un système et je m'intègre à votre organisation comme un vrai directeur marketing. Je pilote la stratégie, je coordonne les éventuels prestataires et je reste responsable des résultats — pas d'une prestation isolée.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Comment se passe le premier contact ?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Vous soumettez votre projet via le formulaire. Je vous réponds sous 48h pour fixer un premier échange. Cet entretien me permet de comprendre votre situation et de voir si je peux vous aider. Si c'est le cas, je vous remets un rapport d'audit et une proposition sur mesure.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Travaillez-vous à distance ?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Oui, intégralement. Je suis basé dans le Pays d'Auge en Normandie et je travaille en remote avec des clients partout en France. Les points se font en visio — les déplacements ponctuels sont possibles selon les besoins.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Êtes-vous disponible pour une mission courte ?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Tout dépend du périmètre. La phase d'audit seule est possible si vous souhaitez simplement un diagnostic et des recommandations. Pour un projet complet, la durée minimale est généralement de 2 à 3 mois pour que le système soit réellement en place et opérationnel.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Je suis une très petite structure — est-ce adapté ?
+          <span class="faq-arrow">+</span>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Oui. Le modèle modulable est précisément conçu pour s'adapter à votre réalité — budget, ressources, priorités. On commence par les fondations et on construit dans le bon ordre. Vous ne payez que ce dont vous avez besoin.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: MANIFESTE
+══════════════════════════════════════════════════════════════ -->
+<div id="manifeste">
+
+  <div class="manifeste-hero">
+    <div class="manifeste-conviction">
+      <p class="section-label">Manifeste</p>
+      <h1 class="conviction-quote">Stratégie d'abord.<br><em>Impact ensuite.</em></h1>
+      <p class="conviction-text">Le marketing qui fonctionne est celui qui comprend son marché avant de parler. Une marque bien positionnée bat toujours une marque mal construite qui dépense plus. Ce n'est pas une conviction — c'est une observation répétée sur des dizaines de projets, dans des secteurs radicalement différents.</p>
+    </div>
+  </div>
+
+  <div class="manifeste-methode">
+    <div class="methode-text">
+      <p class="section-label">Ma façon de travailler</p>
+      <h2 class="methode-title">Créatif dans l'approche.<br><em>Rigoureux dans l'exécution.</em></h2>
+      <p class="methode-para">Je construis des stratégies marketing opérationnelles — pas des présentations. Chaque mission commence par une écoute rigoureuse, se structure avec méthode, et se pilote avec des indicateurs concrets.</p>
+      <p class="methode-para">Je travaille aussi bien sur des marchés B2C grand public que sur des environnements B2B complexes. À la pointe des tendances digitales, des nouvelles pratiques éditoriales et des comportements d'achat contemporains.</p>
+      <p class="methode-para">Ce qui me différencie d'une agence : je m'intègre à votre organisation comme un directeur marketing — je pilote, je coordonne, je reste responsable des résultats. Pas d'une prestation. De la croissance.</p>
+    </div>
+    <div class="methode-stats">
+      <div class="ms-item">
+        <div class="ms-num counter" data-target="80">0</div><span class="ms-num">+</span>
+        <p class="ms-label">Marques accompagnées</p>
+      </div>
+      <div class="ms-item">
+        <div class="ms-num">4</div>
+        <p class="ms-label">Secteurs maîtrisés</p>
+      </div>
+      <div class="ms-item">
+        <div class="ms-num">B2C</div>
+        <p class="ms-label">Grand public & retail</p>
+      </div>
+      <div class="ms-item">
+        <div class="ms-num">B2B</div>
+        <p class="ms-label">Marchés complexes</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="manifeste-competences">
+    <p class="section-label">Compétences</p>
+    <h2 class="section-title" style="margin-bottom:0.5rem;">Ce que je maîtrise.</h2>
+    <div class="comp-grid">
+      <div class="comp-card">
+        <h3 class="comp-title">Marketing stratégique</h3>
+        <div class="comp-tags">
+          <span class="comp-tag">Positionnement</span>
+          <span class="comp-tag">Stratégie de marque</span>
+          <span class="comp-tag">Analyse concurrentielle</span>
+          <span class="comp-tag">Segmentation</span>
+          <span class="comp-tag">Plan marketing</span>
+        </div>
+      </div>
+      <div class="comp-card">
+        <h3 class="comp-title">Marketing opérationnel</h3>
+        <div class="comp-tags">
+          <span class="comp-tag">SEO & contenu</span>
+          <span class="comp-tag">E-commerce</span>
+          <span class="comp-tag">Social media</span>
+          <span class="comp-tag">Prospection B2B</span>
+          <span class="comp-tag">CRM</span>
+          <span class="comp-tag">Paid media</span>
+        </div>
+      </div>
+      <div class="comp-card">
+        <h3 class="comp-title">Pilotage & Direction</h3>
+        <div class="comp-tags">
+          <span class="comp-tag">Reporting KPIs</span>
+          <span class="comp-tag">Coordination agences</span>
+          <span class="comp-tag">Budget</span>
+          <span class="comp-tag">Accompagnement équipes</span>
+          <span class="comp-tag">Plan moyen terme</span>
+        </div>
+      </div>
+      <div class="comp-card">
+        <h3 class="comp-title">Secteurs & marchés</h3>
+        <div class="comp-tags">
+          <span class="comp-tag">Artisanat & terroir</span>
+          <span class="comp-tag">Hôtellerie de luxe</span>
+          <span class="comp-tag">E-commerce industriel</span>
+          <span class="comp-tag">B2C</span>
+          <span class="comp-tag">B2B</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: RÉALISATIONS
+══════════════════════════════════════════════════════════════ -->
+<div id="realisations">
+
+  <div class="real-hero">
+    <div>
+      <p class="section-label">Études de cas</p>
+      <h1 class="page-hero-title">Trois projets.<br><em>Trois univers.</em></h1>
+      <p class="real-note">Les noms des entreprises ont été modifiés pour des raisons de confidentialité. Il s'agit de projets réels conduits et réalisés dans leur intégralité.</p>
+    </div>
+  </div>
+
+  <!-- CAS 1 -->
+  <div class="cas-detail">
+    <div class="cas-detail-header">
+      <div class="cas-detail-meta">
+        <p class="cas-detail-sector">Artisanat · Pays d'Auge · Normandie</p>
+        <h2 class="cas-detail-title">Brasserie Artisanale<br><em>Normande.</em></h2>
+        <p class="cas-detail-subtitle">Structurer et lancer une marque de bière artisanale — de zéro jusqu'au plan moyen terme.</p>
+      </div>
+      <div class="cas-detail-honoraires">
+        <p class="honoraires-label">Honoraires</p>
+        <p class="honoraires-val">11 400 € HT</p>
+      </div>
+    </div>
+    <div class="cas-detail-body">
+      <div>
+        <p class="cas-detail-section-title">Contexte</p>
+        <p class="cas-detail-text">Un brasseur artisanal actif depuis 5 ans. Produit validé par le marché, ancrage normand fort, 3 gammes cohérentes. Mais aucune identité formalisée, pas de distribution B2B organisée, zéro présence digitale structurée. Un potentiel réel freiné par l'absence de structure.</p>
+      </div>
+      <div>
+        <p class="cas-detail-section-title">Ce que j'ai construit</p>
+        <p class="cas-detail-text">Stratégie de marque complète avec positionnement terroir, récit de marque en 3 versions, brief graphiste. Plan d'action 12 mois — digital, B2B caves/restaurants, présence marchés. Plan moyen terme 12–36 mois avec nouvelles gammes et distribution Calvados.</p>
+      </div>
+    </div>
+    <div class="cas-kpis">
+      <div class="kpi-item">
+        <p class="kpi-val">10–15</p>
+        <p class="kpi-label">Points de vente B2B actifs objectif M12</p>
+      </div>
+      <div class="kpi-item">
+        <p class="kpi-val">400+</p>
+        <p class="kpi-label">Visiteurs mensuels visés sur le site vitrine</p>
+      </div>
+      <div class="kpi-item">
+        <p class="kpi-val">8</p>
+        <p class="kpi-label">Documents complets livrés</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAS 2 -->
+  <div class="cas-detail alt">
+    <div class="cas-detail-header">
+      <div class="cas-detail-meta">
+        <p class="cas-detail-sector">Hôtellerie Palace 5★ · Paris 9e</p>
+        <h2 class="cas-detail-title">Hôtel<br><em>Caillebotte.</em></h2>
+        <p class="cas-detail-subtitle">Repositionner un palace parisien pour attirer les nouvelles clientèles du luxe contemporain.</p>
+      </div>
+      <div class="cas-detail-honoraires">
+        <p class="honoraires-label">Honoraires</p>
+        <p class="honoraires-val">35 300 € HT</p>
+      </div>
+    </div>
+    <div class="cas-detail-body">
+      <div>
+        <p class="cas-detail-section-title">Contexte</p>
+        <p class="cas-detail-text">Un palace 5 étoiles ancré dans le 9e arrondissement. Excellence du produit indiscutable — mais communication figée dans les codes d'un luxe classique qui ne parle plus aux nouvelles générations. Cinq cibles identifiées sans hiérarchie : UHNW, business premium, Gen Z, Asie, clientèle française.</p>
+      </div>
+      <div>
+        <p class="cas-detail-section-title">Ce que j'ai construit</p>
+        <p class="cas-detail-text">Refonte complète de la plateforme de marque. Positionnement : "Le premier palace parisien qui assume pleinement son époque." Déploiement digital 4 réseaux dont Xiaohongshu pour l'Asie. Relations presse internationale — Monocle, Wallpaper*, Condé Nast. Partenariats Opéra Garnier, galeries, maisons de mode.</p>
+      </div>
+    </div>
+    <div class="cas-kpis">
+      <div class="kpi-item">
+        <p class="kpi-val">+15 pts</p>
+        <p class="kpi-label">Réservations directes vs OTA objectif M12</p>
+      </div>
+      <div class="kpi-item">
+        <p class="kpi-val">×2</p>
+        <p class="kpi-label">Trafic site vs baseline M0</p>
+      </div>
+      <div class="kpi-item">
+        <p class="kpi-val">50k+</p>
+        <p class="kpi-label">Abonnés Instagram qualifiés objectif M30</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAS 3 -->
+  <div class="cas-detail">
+    <div class="cas-detail-header">
+      <div class="cas-detail-meta">
+        <p class="cas-detail-sector">E-commerce · Industrie française</p>
+        <h2 class="cas-detail-title">ALMÉTAL<br><em>Scale & Hybride.</em></h2>
+        <p class="cas-detail-subtitle">Transformer une croissance Covid exceptionnelle en position dominante durable.</p>
+      </div>
+      <div class="cas-detail-honoraires">
+        <p class="honoraires-label">Honoraires</p>
+        <p class="honoraires-val">23 300 € HT</p>
+      </div>
+    </div>
+    <div class="cas-detail-body">
+      <div>
+        <p class="cas-detail-section-title">Contexte</p>
+        <p class="cas-detail-text">Fabricant de menuiserie aluminium pionnier de l'e-commerce depuis 2008. La crise Covid génère une croissance massive et conjoncturelle. Les fondateurs ouvrent un showroom IDF et créent un service commercial — et cherchent à transformer cet élan en position dominante durable sur un marché qui se structure.</p>
+      </div>
+      <div>
+        <p class="cas-detail-section-title">Ce que j'ai construit</p>
+        <p class="cas-detail-text">Architecture de marque double canal B2C/B2B. Refonte SEO e-commerce avec configurateur 3D. CRM et programme partenaires avec 200 cibles artisans et architectes IDF. Activation showroom avec événements mensuels et visite 360°. Stratégie éditoriale pour devenir la référence sectorielle menuiserie aluminium en France.</p>
+      </div>
+    </div>
+    <div class="cas-kpis">
+      <div class="kpi-item">
+        <p class="kpi-val">+40%</p>
+        <p class="kpi-label">Trafic organique objectif M12</p>
+      </div>
+      <div class="kpi-item">
+        <p class="kpi-val">200+</p>
+        <p class="kpi-label">Comptes partenaires B2B France objectif M30</p>
+      </div>
+      <div class="kpi-item">
+        <p class="kpi-val">N°1</p>
+        <p class="kpi-label">Référence SEO menuiserie aluminium France M36</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="real-cta">
+    <p class="cta-eyebrow" style="margin-bottom:1rem;">Votre projet pourrait être ici.</p>
+    <h2 class="cta-title" style="margin-bottom:1rem;font-size:clamp(2rem,4vw,3rem);">Parlons de ce que<br><em>vous construisez.</em></h2>
+    <a href="#" class="btn-primary" onclick="showPage('contact'); return false;">Soumettre mon projet</a>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: CONTACT
+══════════════════════════════════════════════════════════════ -->
+<div id="contact">
+  <div class="contact-wrap">
+    <div class="contact-left">
+      <p class="section-label">Contact</p>
+      <h1 class="contact-title">Parlez-moi de<br>votre <em>projet.</em></h1>
+      <p class="contact-desc">Soumettez votre projet via le formulaire. Je vous réponds sous 48h pour fixer un premier échange — sans engagement de votre côté.</p>
+      <div class="contact-info">
+        <div class="contact-info-item">
+          <p class="ci-label">Email</p>
+          <p class="ci-val"><a href="mailto:alexisguliana.marketing@gmail.com">alexisguliana.marketing@gmail.com</a></p>
+        </div>
+        <div class="contact-info-item">
+          <p class="ci-label">Téléphone</p>
+          <p class="ci-val"><a href="tel:+33749019350">07 49 01 93 50</a></p>
+        </div>
+        <div class="contact-info-item">
+          <p class="ci-label">Localisation</p>
+          <p class="ci-val">Mézidon Vallée d'Auge (14270)<br>Remote — France entière</p>
+        </div>
+        <div class="contact-info-item">
+          <p class="ci-label">LinkedIn</p>
+          <p class="ci-val" style="color:var(--gris);font-style:italic;font-size:0.85rem;">Bientôt disponible</p>
+        </div>
+        <div class="contact-info-item">
+          <p class="ci-label">Délai de réponse</p>
+          <p class="ci-val">Sous 48h</p>
+        </div>
+      </div>
+    </div>
+    <div class="contact-right">
+      <div class="contact-form">
+        <p class="section-label" style="margin-bottom:2rem;">Formulaire de contact</p>
+        <div class="form-group">
+          <label class="form-label">Nom complet</label>
+          <input type="text" class="form-input" placeholder="Prénom Nom">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="votre@email.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Entreprise / Activité</label>
+          <input type="text" class="form-input" placeholder="Nom de votre entreprise ou activité">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type de besoin</label>
+          <select class="form-select">
+            <option value="">Sélectionnez...</option>
+            <option>Stratégie & positionnement</option>
+            <option>Acquisition & visibilité</option>
+            <option>Conversion & pilotage</option>
+            <option>Pilotage mensuel</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Budget indicatif</label>
+          <select class="form-select">
+            <option value="">Sélectionnez...</option>
+            <option>Moins de 1 500 €</option>
+            <option>1 500 € – 3 000 €</option>
+            <option>3 000 € – 6 000 €</option>
+            <option>6 000 € – 15 000 €</option>
+            <option>+ de 15 000 €</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Décrivez votre projet</label>
+          <textarea class="form-textarea" placeholder="Contexte, objectifs, contraintes, questions..."></textarea>
+        </div>
+        <p class="form-note">Je réponds à tous les messages sous 48h.</p>
+        <button class="form-submit" onclick="handleSubmit(this)">Envoyer ma demande →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-brand">Alexis <span>Guliana</span> — Directeur Marketing Externalisé</div>
+  <div class="footer-legal">SIRET 103 212 411 000 13 · Micro-entreprise · TVA non applicable Art. 293B CGI</div>
+  <div class="footer-links">
+    <a href="#" onclick="showPage('offre'); return false;">L'offre</a>
+    <a href="#" onclick="showPage('contact'); return false;">Contact</a>
+  </div>
+</footer>
+
+<script>
+/* ── Custom cursor ─────────────────────────────────────────────────────────── */
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animCursor() {
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+/* ── Nav scroll ─────────────────────────────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+/* ── Mobile menu ────────────────────────────────────────────────────────────── */
+function toggleMenu() {
+  const h = document.getElementById('hamburger');
+  const m = document.getElementById('mobileMenu');
+  h.classList.toggle('active');
+  m.classList.toggle('open');
+  document.body.style.overflow = m.classList.contains('open') ? 'hidden' : '';
+}
+
+/* ── Page navigation ────────────────────────────────────────────────────────── */
+const pages = ['home', 'offre', 'manifeste', 'realisations', 'contact'];
+function showPage(id) {
+  pages.forEach(p => {
+    const el = document.getElementById(p);
+    el.style.display = (p === id) ? 'block' : 'none';
+  });
+  // Show/hide footer
+  document.querySelector('footer').style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => {
+    initReveal();
+    initCounters();
+  }, 50);
+}
+
+// Init: show home
+document.addEventListener('DOMContentLoaded', () => {
+  pages.forEach(p => {
+    document.getElementById(p).style.display = (p === 'home') ? 'block' : 'none';
+  });
+  initParticles();
+  initReveal();
+  initCounters();
+});
+
+/* ── Particles ──────────────────────────────────────────────────────────────── */
+function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+  const particles = Array.from({length: 60}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.2 + 0.3,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    a: Math.random() * 0.5 + 0.1
+  }));
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(201,168,76,${p.a})`;
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+    });
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(201,168,76,${0.06 * (1 - dist/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+}
+
+/* ── Reveal on scroll ───────────────────────────────────────────────────────── */
+function initReveal() {
+  const els = document.querySelectorAll('.reveal');
+  els.forEach(el => el.classList.remove('visible'));
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  els.forEach(el => obs.observe(el));
+}
+
+/* ── Counters ───────────────────────────────────────────────────────────────── */
+function initCounters() {
+  const counters = document.querySelectorAll('.counter');
+  counters.forEach(c => {
+    const target = +c.dataset.target;
+    const step = target / 60;
+    let current = 0;
+    const update = () => {
+      current = Math.min(current + step, target);
+      c.textContent = Math.floor(current);
+      if (current < target) requestAnimationFrame(update);
+    };
+    update();
+  });
+}
+
+/* ── FAQ ────────────────────────────────────────────────────────────────────── */
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
+}
+
+/* ── Form submit ────────────────────────────────────────────────────────────── */
+function handleSubmit(btn) {
+  btn.textContent = 'Message envoyé ✓';
+  btn.style.background = 'var(--or-dim)';
+  setTimeout(() => {
+    btn.textContent = 'Envoyer ma demande →';
+    btn.style.background = 'var(--or)';
+  }, 3000);
+}
+</script>
+</body>
+</html>
