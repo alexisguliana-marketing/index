@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/*
+ * Brand tokens — kept in sync by hand with packages/ui/src/tokens.ts
+ * (the source of truth shared with apps/mobile). Update both together.
+ */
+:root {
+  --color-ivory: #fbf7f2;
+  --color-ivory-deep: #f3ece2;
+  --color-ink: #2b2420;
+  --color-ink-soft: #4a4038;
+  --color-gold: #c9a227;
+  --color-gold-pale: #e4ce8a;
+  --color-rose: #c98e82;
+  --color-sage: #8a9a7e;
+  --color-border: #e5ddd0;
+
+  --background: var(--color-ivory);
+  --foreground: var(--color-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ivory: var(--color-ivory);
+  --color-ivory-deep: var(--color-ivory-deep);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-gold: var(--color-gold);
+  --color-gold-pale: var(--color-gold-pale);
+  --color-rose: var(--color-rose);
+  --color-sage: var(--color-sage);
+  --color-border: var(--color-border);
+  --font-display: var(--font-playfair);
+  --font-sans: var(--font-dm-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
