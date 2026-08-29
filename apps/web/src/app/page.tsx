@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-24 text-center sm:px-12">
@@ -12,12 +14,12 @@ export default function Home() {
         budget, vos invités, et les meilleurs prestataires, au même endroit.
       </p>
       <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-        <a
-          href="#"
+        <Link
+          href="/inscription"
           className="rounded-full bg-ink px-8 py-3 text-sm font-medium tracking-wide text-ivory transition hover:bg-ink-soft"
         >
           Créer mon mariage
-        </a>
+        </Link>
         <a
           href="#"
           className="rounded-full border border-border px-8 py-3 text-sm font-medium tracking-wide text-ink transition hover:border-gold hover:text-gold"

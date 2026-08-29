@@ -14,6 +14,9 @@
   --color-rose: #c98e82;
   --color-sage: #8a9a7e;
   --color-border: #e5ddd0;
+  --color-success: #5c8a66;
+  --color-warning: #c98a3c;
+  --color-danger: #b5544a;
 
   --background: var(--color-ivory);
   --foreground: var(--color-ink);
@@ -31,6 +34,9 @@
   --color-rose: var(--color-rose);
   --color-sage: var(--color-sage);
   --color-border: var(--color-border);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
   --font-display: var(--font-playfair);
   --font-sans: var(--font-dm-sans);
 }

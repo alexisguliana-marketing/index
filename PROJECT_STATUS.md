@@ -1,7 +1,7 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-29 — Fondation (PHASE 0 : architecture et
-environnement), avant toute fonctionnalité métier.
+Dernière mise à jour : 2026-08-29 — PHASE 1 (authentification et profils)
+terminée, sur la fondation PHASE 0.
 
 ## Fonctionnalités terminées
 
@@ -41,10 +41,35 @@ environnement), avant toute fonctionnalité métier.
 - **Archivage** : l'ancienne landing page marketing personnelle
   (`index.html`) déplacée vers `legacy/marketing-landing/` à la demande de
   l'utilisateur, pour laisser la racine du repo au monorepo.
+- **PHASE 1 — Authentification et profils (web uniquement, voir Décisions
+  techniques)** :
+  - Inscription (email/mot de passe + prénom), connexion, déconnexion, mot
+    de passe oublié / réinitialisation, confirmation email — via
+    `@supabase/ssr` et des Server Actions (`apps/web/src/app/(auth)/actions.ts`,
+    `apps/web/src/app/compte/actions.ts`).
+  - Route `/auth/callback` (échange PKCE du code) pour les liens email de
+    confirmation et de récupération de mot de passe.
+  - `apps/web/src/proxy.ts` (convention Next.js 16, remplace
+    `middleware.ts`) rafraîchit la session à chaque requête et protège
+    `/compte`, avec redirection vers `/connexion?redirect=...`.
+  - Page `/compte` protégée : édition du prénom (`profiles.full_name`),
+    déconnexion. En-tête de site (`SiteHeader`) reflétant l'état
+    connecté/déconnecté sur toutes les pages.
+  - Protection anti-open-redirect sur le paramètre `?redirect=`
+    (`lib/safe-redirect.ts`, testée).
+  - `@wedding-univers/types` (`Profile`) et `@wedding-univers/validation`
+    (`signUpSchema`, `signInSchema`, `requestPasswordResetSchema`,
+    `resetPasswordSchema`, `updateProfileSchema`) étendus en conséquence.
+  - **Dégradation gracieuse sans projet Supabase configuré** : tant que
+    `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` ne sont pas
+    définies, `createClient()` (web, client et serveur) renvoie `null` au
+    lieu de lever une exception ; toutes les pages/actions le gèrent
+    (message d'information au lieu d'un crash). Build/dev fonctionnent donc
+    dès aujourd'hui, sans configuration.
 
 ## En cours
 
-Rien — la fondation (PHASE 0) est terminée. Prochaine étape : PHASE 1.
+Rien — la PHASE 1 est terminée. Prochaine étape : PHASE 2.
 
 ## Problèmes connus / limitations assumées
 
@@ -70,6 +95,20 @@ Rien — la fondation (PHASE 0) est terminée. Prochaine étape : PHASE 1.
   `react-dom@19.2.8` (web) et `react@19.2.3` (Expo) — normal dans un
   monorepo Next.js + Expo, chaque app garde sa propre version de React ;
   aucune action requise.
+- **Authentification non testée de bout en bout contre un vrai Supabase**
+  (même limitation que la fondation : pas de projet distant, pas de Docker
+  local). Vérifié à la place : schéma + RLS valides (PHASE 0), et
+  build/lint/typecheck/tests + rendu réel de toutes les routes auth via
+  `next dev` + `curl` sans exception serveur, avec Supabase non configuré
+  (dégradation gracieuse). **À revalider contre un vrai projet Supabase dès
+  que possible** (inscription réelle, email de confirmation, réinitialisation
+  de mot de passe).
+- **Types Supabase non générés** : les appels `supabase.from("profiles")...`
+  sont faiblement typés (pas de `Database` généré, puisqu'aucun projet
+  distant n'existe). Lancer `supabase gen types typescript` une fois un
+  projet connecté, et le brancher dans `createClient<Database>(...)`.
+- **apps/mobile n'a pas encore d'authentification** — décision assumée, voir
+  Décisions techniques.
 
 ## Décisions techniques
 
@@ -99,10 +138,31 @@ Rien — la fondation (PHASE 0) est terminée. Prochaine étape : PHASE 1.
   (React Navigation / Expo Router) : hors périmètre de la PHASE 0, à
   ajouter en PHASE 15 (ou plus tôt si une phase business mobile le
   nécessite avant).
+- **PHASE 1 implémentée web uniquement.** Le découpage MVP du cahier des
+  charges liste les phases métier (1 à 14) séparément de « PHASE 15
+  Application mobile » : lu comme un séquencement délibéré (construire
+  chaque fonctionnalité sur le web d'abord, porter sur mobile en fin de
+  parcours), plutôt que de dupliquer chaque écran sur les deux plateformes
+  à chaque phase. `apps/mobile` recevra l'authentification (et le reste)
+  en PHASE 15, en réutilisant `@wedding-univers/validation` (schémas déjà
+  partagés) et le même schéma Supabase/RLS.
+- **`middleware.ts` → `proxy.ts`** : Next.js 16 a renommé et déprécié la
+  convention `middleware` au profit de `proxy` (même mécanisme, nouveau nom
+  de fichier et de fonction exportée). `apps/web/src/proxy.ts` utilise déjà
+  la nouvelle convention.
+- **Pas de champ "type de compte" (couple / professionnel)** : plutôt
+  qu'un champ rigide sur `profiles`, le "type" d'un utilisateur se déduit
+  de ce qu'il crée (une ligne `wedding_members` et/ou `vendors` — rien
+  n'empêche d'être les deux). Évite un champ redondant/ambigu ; le routage
+  vers "créer mon mariage" vs "créer mon profil pro" se fera en PHASE 2/8.
+- **Pas d'upload d'avatar en PHASE 1** : le bucket `avatars` et ses
+  policies RLS existent déjà (PHASE 0), mais l'UI d'upload n'a pas été
+  construite — seule l'édition du prénom l'a été. Non demandé explicitement
+  par le cahier des charges pour cette phase ; à ajouter si besoin.
 
 ## Prochaine étape
 
-**PHASE 1 — Authentification et profils** : intégrer Supabase Auth
-(web via `@supabase/ssr`, déjà configuré dans `apps/web/src/lib/supabase/`
-mais pas encore branché à des pages ; mobile à équiper), écrans
-inscription/connexion, complétion de profil.
+**PHASE 2 — Création du Projet Mariage** : formulaire de création
+("Mon mariage" : prénoms, date, lieu, invités, budget, style, cérémonie),
+enregistrement en base (`weddings` + `wedding_members` via le trigger déjà
+en place), redirection post-inscription vers ce flow.

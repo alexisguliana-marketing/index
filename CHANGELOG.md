@@ -3,7 +3,25 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — Fondation (PHASE 0)
+## [Unreleased] — PHASE 1 : Authentification et profils (web)
+
+### Added
+
+- Inscription, connexion, déconnexion, mot de passe oublié et
+  réinitialisation, confirmation d'email — via Supabase Auth
+  (`@supabase/ssr`) et des Server Actions Next.js.
+- Route `/auth/callback` pour l'échange PKCE des liens email.
+- `apps/web/src/proxy.ts` : rafraîchissement de session + protection de
+  `/compte` (convention Next.js 16, remplace `middleware.ts`).
+- Page `/compte` (édition du prénom, déconnexion) et en-tête de site
+  reflétant l'état connecté/déconnecté.
+- Protection anti-open-redirect sur `?redirect=` (testée).
+- `Profile` dans `@wedding-univers/types` ; schémas d'authentification dans
+  `@wedding-univers/validation`.
+- Dégradation gracieuse de tout le code Supabase (web) en l'absence de
+  projet configuré, pour ne jamais casser `pnpm build`/`pnpm dev`.
+
+## Fondation (PHASE 0)
 
 ### Added
 
