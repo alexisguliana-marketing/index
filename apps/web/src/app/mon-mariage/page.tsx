@@ -114,6 +114,14 @@ export default async function MonMariagePage() {
     .eq("wedding_id", membership.wedding_id)
     .maybeSingle();
 
+  const { data: upcomingTasks } = await supabase
+    .from("tasks")
+    .select("id, title, due_date, status")
+    .eq("wedding_id", membership.wedding_id)
+    .neq("status", "done")
+    .order("due_date", { ascending: true, nullsFirst: false })
+    .limit(4);
+
   const completeness = computeProfileCompleteness(wedding);
 
   const details: { label: string; value: string }[] = [
@@ -179,9 +187,25 @@ export default async function MonMariagePage() {
 
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card title="Prochaines tâches">
-          <p className="text-sm text-ink-soft">
-            Aucune tâche pour l&apos;instant — la gestion des tâches arrive bientôt.
-          </p>
+          {upcomingTasks && upcomingTasks.length > 0 ? (
+            <ul className="flex flex-col gap-2">
+              {upcomingTasks.map((task) => (
+                <li key={task.id} className="flex items-center justify-between text-sm">
+                  <span className="text-ink">{task.title}</span>
+                  <span className="text-xs text-ink-soft">
+                    {task.due_date
+                      ? new Date(task.due_date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })
+                      : "Sans échéance"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-ink-soft">Aucune tâche en attente.</p>
+          )}
+          <a href="/mon-mariage/taches" className="mt-3 inline-block text-xs font-medium text-gold hover:underline">
+            Voir toutes les tâches →
+          </a>
         </Card>
 
         <Card title="Recommandations">

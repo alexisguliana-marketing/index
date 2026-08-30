@@ -3,7 +3,24 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 3 : Dashboard mariage
+## [Unreleased] — PHASE 4 : Tâches et planning
+
+### Added
+
+- `/mon-mariage/taches` (§6-7) : liste des tâches groupée par statut (à
+  faire / en cours / terminé), avec catégorie, priorité et échéance.
+- Création, changement de statut et suppression de tâches (Server
+  Actions), contrôles réservés aux rôles autorisés (`tasks.manage`), RLS
+  en filet de sécurité.
+- Génération de la checklist par défaut à partir de la date du mariage
+  (`generateDefaultChecklist`, moteur à règles configurables — pas d'IA),
+  idempotente (pas de doublons).
+- Dashboard (`/mon-mariage`) : carte « Prochaines tâches » branchée sur
+  les vraies données ; lien « Tâches » dans l'en-tête de site.
+- Tests pour `generateDefaultChecklist`
+  (`packages/config/src/__tests__/checklist.test.ts`).
+
+## PHASE 3 : Dashboard mariage
 
 ### Added
 

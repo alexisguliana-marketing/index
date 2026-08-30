@@ -1,7 +1,8 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-30 — PHASE 3 (dashboard mariage) terminée, sur
-PHASE 0 (fondation), PHASE 1 (authentification) et PHASE 2 (création).
+Dernière mise à jour : 2026-08-30 — PHASE 4 (tâches et planning) terminée,
+sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création) et
+PHASE 3 (dashboard).
 
 ## Fonctionnalités terminées
 
@@ -104,10 +105,28 @@ PHASE 0 (fondation), PHASE 1 (authentification) et PHASE 2 (création).
     de fausses données — ces sous-systèmes n'existent pas avant PHASE 4 et
     PHASE 11), plus une activité réelle ("Mariage créé le ...").
 
+- **PHASE 4 — Tâches et planning (§6-7)** :
+  - `/mon-mariage/taches` : liste des tâches groupée par statut (à faire /
+    en cours / terminé), avec catégorie, priorité et échéance affichées.
+  - Création de tâche (formulaire + `createTaskAction`), changement de
+    statut et suppression (`updateTaskStatusAction`, `deleteTaskAction`) —
+    contrôles visibles seulement pour les rôles ayant `tasks.manage`
+    (`hasPermission`, déjà défini en PHASE 0), RLS en filet de sécurité
+    côté base dans tous les cas.
+  - Bouton « Générer la checklist par défaut » : appelle
+    `generateDefaultChecklist` (`packages/config`, moteur à règles, pas
+    d'IA) à partir de la date du mariage, résout les catégories vers
+    `task_categories` en base, et ignore les titres déjà présents pour
+    rester idempotent (pas de doublons si on clique plusieurs fois).
+  - Le dashboard (`/mon-mariage`) affiche désormais les vraies prochaines
+    tâches (au lieu du message "à venir" de la PHASE 3) et lien vers
+    `/mon-mariage/taches` ; lien "Tâches" ajouté à l'en-tête de site.
+  - Tests ajoutés pour `generateDefaultChecklist`
+    (`packages/config/src/__tests__/checklist.test.ts`).
+
 ## En cours
 
-Rien — la PHASE 3 est terminée. Prochaine étape : PHASE 4 (tâches et
-planning).
+Rien — la PHASE 4 est terminée. Prochaine étape : PHASE 5 (budget).
 
 ## Problèmes connus / limitations assumées
 
@@ -180,7 +199,24 @@ planning).
   ambiance, cérémonie, gamme), clairement intitulée "Complétude du
   profil" pour ne pas se faire passer pour la progression des tâches.
   À remplacer/compléter par un vrai indicateur de progression une fois
-  les tâches disponibles.
+  les tâches disponibles. **Mise à jour PHASE 4** : les tâches existent
+  désormais, mais la carte dashboard n'a délibérément pas été reconvertie
+  en "% de tâches terminées" — au début d'un projet, 0 tâche terminée sur
+  0 tâche créée donnerait un indicateur vide ou trompeur. La progression
+  réelle des tâches (fait/total) vit sur `/mon-mariage/taches`, où elle a
+  du sens ; la carte dashboard reste un indicateur de complétude du
+  *profil*, pas de la checklist.
+- **Vue tâches : liste groupée par statut uniquement (§7 mentionne aussi
+  calendrier/échéances)** : la V1 de la PHASE 4 livre la vue liste, qui
+  couvre déjà l'essentiel (créer, prioriser, suivre). Vue calendrier et
+  filtre par échéance reportés à une itération future si le besoin est
+  confirmé, pour ne pas construire une UI supplémentaire non demandée
+  explicitement à ce stade.
+- **Assignation de tâche à un collaborateur** : la colonne
+  `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
+  exposée dans le formulaire de création — la gestion des collaborateurs
+  (rôles, invitations) n'arrive qu'en PHASE 7. Exposer l'assignation avant
+  d'avoir une UI pour voir *qui* est membre du mariage aurait peu de sens.
 - **Moteur Wedding Match** : fonctions pures, sans dépendance externe,
   regroupées par critère (`packages/matching/src/engine.ts`) pour rester
   auditables — aligné avec le Principe 2 (pas d'IA gadget). Les poids
@@ -217,7 +253,8 @@ planning).
 
 ## Prochaine étape
 
-**PHASE 2 — Création du Projet Mariage** : formulaire de création
-("Mon mariage" : prénoms, date, lieu, invités, budget, style, cérémonie),
-enregistrement en base (`weddings` + `wedding_members` via le trigger déjà
-en place), redirection post-inscription vers ce flow.
+**PHASE 5 — Budget** : UI pour les postes budgétaires (`budget_items` :
+prévu/dépensé par catégorie), branchée sur la vue `budget_summary` déjà
+utilisée en lecture seule dans le dashboard (PHASE 3) et sur les
+catégories déjà en place (`task_categories`, réutilisées pour le budget
+par le schéma §29).
