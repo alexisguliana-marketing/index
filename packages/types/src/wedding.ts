@@ -22,6 +22,7 @@ export interface Wedding {
   guestCountEstimate: number | null;
   budgetTotal: number | null;
   style: WeddingStyle | null;
+  ambiance: string | null;
   ceremonyType: CeremonyType | null;
   budgetTier: BudgetTier | null;
   isPublic: boolean;

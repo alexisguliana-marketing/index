@@ -26,6 +26,7 @@ export const createWeddingSchema = z.object({
   guestCountEstimate: z.number().int().min(0).max(5000).nullable().optional(),
   budgetTotal: z.number().min(0).nullable().optional(),
   style: weddingStyleSchema.nullable().optional(),
+  ambiance: z.string().trim().max(200).nullable().optional(),
   ceremonyType: ceremonyTypeSchema.nullable().optional(),
   budgetTier: budgetTierSchema.nullable().optional(),
 });

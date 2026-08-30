@@ -1,7 +1,7 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-29 — PHASE 1 (authentification et profils)
-terminée, sur la fondation PHASE 0.
+Dernière mise à jour : 2026-08-29 — PHASE 2 (création du Projet Mariage)
+terminée, sur PHASE 0 (fondation) et PHASE 1 (authentification).
 
 ## Fonctionnalités terminées
 
@@ -67,9 +67,35 @@ terminée, sur la fondation PHASE 0.
     (message d'information au lieu d'un crash). Build/dev fonctionnent donc
     dès aujourd'hui, sans configuration.
 
+- **PHASE 2 — Création du Projet Mariage** :
+  - Colonne `ambiance` ajoutée à `weddings` (migration
+    `20260101000500_wedding_ambiance.sql`), qui complétait le §4 (le champ
+    était listé dans le cahier des charges mais absent du schéma initial).
+  - `createWeddingSchema` (déjà existant) branché à un vrai formulaire
+    `/mon-mariage/creer` (prénoms, date + flexibilité, lieu + "lieu connu",
+    invités, budget, style, ambiance, type de cérémonie, niveau de gamme).
+  - `packages/config` : `WEDDING_STYLES`, `CEREMONY_TYPES`, `BUDGET_TIERS`
+    (libellés français pour les selects du formulaire, réutilisables plus
+    tard par la recherche/filtres).
+  - Page `/mon-mariage` : résumé en lecture seule du mariage de
+    l'utilisateur (via `wedding_members` → `weddings`), redirige vers
+    `/mon-mariage/creer` si aucun mariage n'existe encore.
+  - `/mon-mariage/creer` redirige vers `/mon-mariage` si l'utilisateur a
+    déjà un mariage (pas de doublon possible).
+  - Inscription (session immédiate) redirige désormais vers
+    `/mon-mariage/creer` plutôt que `/compte` — la création du mariage est
+    la toute première action attendue (Principe 1). Le lien de confirmation
+    email suit le même chemin via `?next=/mon-mariage/creer`.
+  - `/compte` et l'en-tête de site affichent un lien vers le mariage
+    (création ou consultation selon le cas).
+  - La création s'appuie sur les policies RLS déjà en place (PHASE 0) :
+    `insert` autorisé si `created_by = auth.uid()`, le trigger
+    `handle_new_wedding` crée automatiquement la ligne `wedding_members`
+    (rôle `admin`).
+
 ## En cours
 
-Rien — la PHASE 1 est terminée. Prochaine étape : PHASE 2.
+Rien — la PHASE 2 est terminée. Prochaine étape : PHASE 3.
 
 ## Problèmes connus / limitations assumées
 
@@ -109,6 +135,14 @@ Rien — la PHASE 1 est terminée. Prochaine étape : PHASE 2.
   projet connecté, et le brancher dans `createClient<Database>(...)`.
 - **apps/mobile n'a pas encore d'authentification** — décision assumée, voir
   Décisions techniques.
+- **Déploiement Vercel (preview manuel, hors git)** : un premier essai a
+  échoué (`npm install` a été utilisé par défaut, incompatible avec le
+  protocole `workspace:*` de pnpm). Corrigé en forçant `installCommand` à
+  utiliser pnpm explicitement. Ce déploiement manuel (upload de fichiers,
+  pas de lockfile inclus pour éviter un lockfile désynchronisé avec le
+  sous-ensemble de fichiers envoyé) est un outil de prévisualisation
+  ponctuel, pas un pipeline CI/CD — un vrai déploiement continu nécessitera
+  de lier le projet Vercel au dépôt GitHub une fois la branche mergée.
 
 ## Décisions techniques
 

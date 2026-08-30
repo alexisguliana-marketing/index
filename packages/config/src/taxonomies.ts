@@ -1,4 +1,40 @@
-import type { GuestGroup, TaskCategory, VendorCategorySlug } from "@wedding-univers/types";
+import type {
+  BudgetTier,
+  CeremonyType,
+  GuestGroup,
+  TaskCategory,
+  VendorCategorySlug,
+  WeddingStyle,
+} from "@wedding-univers/types";
+
+/** Wedding styles (cahier des charges §4/§31). */
+export const WEDDING_STYLES: { slug: WeddingStyle; label: string }[] = [
+  { slug: "rustic", label: "Champêtre" },
+  { slug: "classic", label: "Classique" },
+  { slug: "boho", label: "Bohème" },
+  { slug: "luxury", label: "Luxe" },
+  { slug: "urban", label: "Urbain" },
+  { slug: "beach", label: "Bord de mer" },
+  { slug: "vintage", label: "Vintage" },
+  { slug: "modern", label: "Moderne" },
+  { slug: "other", label: "Autre" },
+];
+
+/** Ceremony types (cahier des charges §4). */
+export const CEREMONY_TYPES: { slug: CeremonyType; label: string }[] = [
+  { slug: "religious", label: "Religieuse" },
+  { slug: "civil", label: "Civile" },
+  { slug: "secular", label: "Laïque" },
+  { slug: "other", label: "Autre" },
+];
+
+/** Budget tiers, i.e. "niveau de gamme" (cahier des charges §4). */
+export const BUDGET_TIERS: { slug: BudgetTier; label: string }[] = [
+  { slug: "economical", label: "Économique" },
+  { slug: "moderate", label: "Modéré" },
+  { slug: "premium", label: "Premium" },
+  { slug: "luxury", label: "Luxe" },
+];
 
 /** Task categories (cahier des charges §6). */
 export const TASK_CATEGORIES: { slug: TaskCategory; label: string }[] = [

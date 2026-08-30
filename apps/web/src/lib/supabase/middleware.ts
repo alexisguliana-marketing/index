@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getSupabaseAnonKey, getSupabaseUrl, hasSupabaseEnv } from "./env";
 
-const PROTECTED_PATHS = ["/compte"];
+const PROTECTED_PATHS = ["/compte", "/mon-mariage"];
 
 /**
  * Refreshes the Supabase auth session on every request and redirects

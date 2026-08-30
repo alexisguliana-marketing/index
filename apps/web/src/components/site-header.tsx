@@ -13,9 +13,14 @@ export async function SiteHeader() {
       </Link>
       <nav className="flex items-center gap-6 text-sm text-ink-soft">
         {user ? (
-          <Link href="/compte" className="hover:text-gold">
-            Mon compte
-          </Link>
+          <>
+            <Link href="/mon-mariage" className="hover:text-gold">
+              Mon mariage
+            </Link>
+            <Link href="/compte" className="hover:text-gold">
+              Mon compte
+            </Link>
+          </>
         ) : (
           <>
             <Link href="/connexion" className="hover:text-gold">

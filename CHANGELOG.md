@@ -3,7 +3,20 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 1 : Authentification et profils (web)
+## [Unreleased] — PHASE 2 : Création du Projet Mariage
+
+### Added
+
+- Migration `weddings.ambiance` (champ §4 manquant du schéma initial).
+- Formulaire `/mon-mariage/creer` (prénoms, date, lieu, invités, budget,
+  style, ambiance, cérémonie, niveau de gamme) et Server Action associée.
+- Page `/mon-mariage` : résumé en lecture seule du mariage de l'utilisateur.
+- `WEDDING_STYLES`, `CEREMONY_TYPES`, `BUDGET_TIERS` dans
+  `@wedding-univers/config` (libellés français).
+- Redirections : inscription → création du mariage ; `/compte` et l'en-tête
+  pointent désormais vers `/mon-mariage`.
+
+## PHASE 1 : Authentification et profils (web)
 
 ### Added
 

@@ -45,7 +45,7 @@ export async function signUpAction(_state: AuthFormState, formData: FormData): P
     password,
     options: {
       data: { full_name: fullName },
-      emailRedirectTo: `${getSiteUrl()}/auth/callback`,
+      emailRedirectTo: `${getSiteUrl()}/auth/callback?next=/mon-mariage/creer`,
     },
   });
 
@@ -57,7 +57,7 @@ export async function signUpAction(_state: AuthFormState, formData: FormData): P
   }
 
   if (data.session) {
-    redirect("/compte");
+    redirect("/mon-mariage/creer");
   }
 
   redirect("/verifiez-votre-email");
