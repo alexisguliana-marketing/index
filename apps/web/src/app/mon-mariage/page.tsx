@@ -10,14 +10,62 @@ function findLabel(options: { slug: string; label: string }[], slug: string | nu
 }
 
 function formatDate(value: string | null): string {
-  if (!value) return "Non définie";
+  if (!value) return "Date non définie";
   return new Date(value).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 }
 
 function formatEuros(value: number | null): string {
-  if (value === null) return "Non défini";
+  if (value === null) return "—";
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
     value,
+  );
+}
+
+interface WeddingRow {
+  partner1_first_name: string;
+  partner2_first_name: string;
+  date: string | null;
+  is_date_flexible: boolean;
+  location: string | null;
+  is_venue_known: boolean;
+  guest_count_estimate: number | null;
+  budget_total: number | null;
+  style: string | null;
+  ambiance: string | null;
+  ceremony_type: string | null;
+  budget_tier: string | null;
+  created_at: string;
+}
+
+function computeProfileCompleteness(wedding: WeddingRow): { filled: number; total: number; percent: number } {
+  const fields = [
+    wedding.date,
+    wedding.location,
+    wedding.guest_count_estimate,
+    wedding.budget_total,
+    wedding.style,
+    wedding.ambiance,
+    wedding.ceremony_type,
+    wedding.budget_tier,
+  ];
+  const filled = fields.filter((value) => value !== null && value !== "").length;
+  return { filled, total: fields.length, percent: Math.round((filled / fields.length) * 100) };
+}
+
+function ProgressBar({ percent }: { percent: number }) {
+  return (
+    <div className="h-2 w-full overflow-hidden rounded-full bg-ivory-deep">
+      <div className="h-full rounded-full bg-gold" style={{ width: `${percent}%` }} />
+    </div>
+  );
+}
+
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-lg border border-border bg-white p-5">
+      <h2 className="mb-4 text-sm font-medium text-ink-soft">{title}</h2>
+      {children}
+    </div>
   );
 }
 
@@ -54,40 +102,25 @@ export default async function MonMariagePage() {
     .limit(1)
     .maybeSingle();
 
-  const wedding = membership?.weddings as
-    | {
-        partner1_first_name: string;
-        partner2_first_name: string;
-        date: string | null;
-        is_date_flexible: boolean;
-        location: string | null;
-        is_venue_known: boolean;
-        guest_count_estimate: number | null;
-        budget_total: number | null;
-        style: string | null;
-        ambiance: string | null;
-        ceremony_type: string | null;
-        budget_tier: string | null;
-      }
-    | undefined;
+  const wedding = membership?.weddings as WeddingRow | undefined;
 
-  if (!wedding) {
+  if (!wedding || !membership) {
     redirect("/mon-mariage/creer");
   }
 
+  const { data: budget } = await supabase
+    .from("budget_summary")
+    .select("total, spent, remaining, percent_used")
+    .eq("wedding_id", membership.wedding_id)
+    .maybeSingle();
+
+  const completeness = computeProfileCompleteness(wedding);
+
   const details: { label: string; value: string }[] = [
-    { label: "Date", value: `${formatDate(wedding.date)}${wedding.is_date_flexible ? " (flexible)" : ""}` },
-    {
-      label: "Lieu",
-      value: wedding.location
-        ? `${wedding.location}${wedding.is_venue_known ? " — lieu réservé" : ""}`
-        : "Non défini",
-    },
     {
       label: "Invités",
       value: wedding.guest_count_estimate !== null ? `${wedding.guest_count_estimate} personnes` : "Non défini",
     },
-    { label: "Budget", value: formatEuros(wedding.budget_total) },
     { label: "Style", value: findLabel(WEDDING_STYLES, wedding.style) ?? "Non défini" },
     { label: "Ambiance", value: wedding.ambiance ?? "Non définie" },
     { label: "Cérémonie", value: findLabel(CEREMONY_TYPES, wedding.ceremony_type) ?? "Non définie" },
@@ -95,19 +128,76 @@ export default async function MonMariagePage() {
   ];
 
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-16 sm:py-24">
-      <p className="mb-2 text-xs tracking-[0.3em] text-ink-soft uppercase">Mon projet</p>
-      <h1 className="mb-10 font-[family-name:var(--font-display)] text-3xl italic text-ink">
+    <main className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
+      <p className="mb-2 text-xs tracking-[0.3em] text-ink-soft uppercase">💍 Mon mariage</p>
+      <h1 className="mb-2 font-[family-name:var(--font-display)] text-3xl italic text-ink">
         {wedding.partner1_first_name} &amp; {wedding.partner2_first_name}
       </h1>
-      <dl className="divide-y divide-border rounded-lg border border-border bg-white">
-        {details.map((detail) => (
-          <div key={detail.label} className="flex items-center justify-between px-5 py-4">
-            <dt className="text-sm text-ink-soft">{detail.label}</dt>
-            <dd className="text-sm font-medium text-ink">{detail.value}</dd>
-          </div>
-        ))}
-      </dl>
+      <p className="mb-10 text-sm text-ink-soft">
+        📅 {formatDate(wedding.date)}
+        {wedding.is_date_flexible ? " (flexible)" : ""}
+        {" · "}📍 {wedding.location ?? "Lieu non défini"}
+        {wedding.is_venue_known ? " (réservé)" : ""}
+      </p>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Card title="Complétude du profil">
+          <p className="mb-3 text-2xl font-medium text-ink">{completeness.percent}%</p>
+          <ProgressBar percent={completeness.percent} />
+          <p className="mt-2 text-xs text-ink-soft">
+            {completeness.filled} sur {completeness.total} informations renseignées
+          </p>
+        </Card>
+
+        <Card title="Budget">
+          {budget?.total ? (
+            <>
+              <p className="mb-3 text-2xl font-medium text-ink">
+                {formatEuros(budget.spent)} <span className="text-base text-ink-soft">/ {formatEuros(budget.total)}</span>
+              </p>
+              <ProgressBar percent={Math.min(100, budget.percent_used ?? 0)} />
+              <p className="mt-2 text-xs text-ink-soft">Reste {formatEuros(budget.remaining)}</p>
+            </>
+          ) : (
+            <p className="text-sm text-ink-soft">Budget global non défini.</p>
+          )}
+        </Card>
+      </div>
+
+      <div className="mt-4">
+        <Card title="Détails du mariage">
+          <dl className="divide-y divide-border">
+            {details.map((detail) => (
+              <div key={detail.label} className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
+                <dt className="text-sm text-ink-soft">{detail.label}</dt>
+                <dd className="text-sm font-medium text-ink">{detail.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </Card>
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Card title="Prochaines tâches">
+          <p className="text-sm text-ink-soft">
+            Aucune tâche pour l&apos;instant — la gestion des tâches arrive bientôt.
+          </p>
+        </Card>
+
+        <Card title="Recommandations">
+          <p className="text-sm text-ink-soft">
+            La découverte de prestataires arrive bientôt.
+          </p>
+        </Card>
+      </div>
+
+      <div className="mt-4">
+        <Card title="Activité">
+          <ul className="text-sm text-ink-soft">
+            <li>Mariage créé le {formatDate(wedding.created_at)}</li>
+          </ul>
+        </Card>
+      </div>
     </main>
   );
 }

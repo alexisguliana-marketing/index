@@ -3,7 +3,18 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 2 : Création du Projet Mariage
+## [Unreleased] — PHASE 3 : Dashboard mariage
+
+### Added
+
+- `/mon-mariage` devient le vrai tableau de bord (§5) : en-tête couple/date/
+  lieu, carte « Complétude du profil » (% de champs du mariage renseignés),
+  carte « Budget » branchée sur la vue SQL `budget_summary`, carte
+  « Détails du mariage » (invités, style, ambiance, cérémonie, gamme), et
+  sections « à venir » honnêtes pour les tâches et les recommandations
+  (aucune donnée inventée tant que ces sous-systèmes n'existent pas).
+
+## PHASE 2 : Création du Projet Mariage
 
 ### Added
 

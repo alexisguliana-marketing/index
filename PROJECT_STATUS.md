@@ -1,7 +1,7 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-29 — PHASE 2 (création du Projet Mariage)
-terminée, sur PHASE 0 (fondation) et PHASE 1 (authentification).
+Dernière mise à jour : 2026-08-30 — PHASE 3 (dashboard mariage) terminée, sur
+PHASE 0 (fondation), PHASE 1 (authentification) et PHASE 2 (création).
 
 ## Fonctionnalités terminées
 
@@ -93,9 +93,21 @@ terminée, sur PHASE 0 (fondation) et PHASE 1 (authentification).
     `handle_new_wedding` crée automatiquement la ligne `wedding_members`
     (rôle `admin`).
 
+- **PHASE 3 — Dashboard mariage (§5)** :
+  - `/mon-mariage` est devenu le vrai tableau de bord : en-tête (couple,
+    date, lieu), carte "Complétude du profil" (% de champs renseignés —
+    calculé, pas les tâches, voir Décisions techniques), carte "Budget"
+    branchée sur la vue SQL `budget_summary` (donnée réelle, à 0 € dépensé
+    tant qu'aucun poste budgétaire n'existe), carte "Détails du mariage"
+    (invités, style, ambiance, cérémonie, gamme), et deux sections
+    honnêtes "à venir" pour les tâches et les recommandations (pas encore
+    de fausses données — ces sous-systèmes n'existent pas avant PHASE 4 et
+    PHASE 11), plus une activité réelle ("Mariage créé le ...").
+
 ## En cours
 
-Rien — la PHASE 2 est terminée. Prochaine étape : PHASE 3.
+Rien — la PHASE 3 est terminée. Prochaine étape : PHASE 4 (tâches et
+planning).
 
 ## Problèmes connus / limitations assumées
 
@@ -160,6 +172,15 @@ Rien — la PHASE 2 est terminée. Prochaine étape : PHASE 3.
   des valeurs *calculées* (total, dépensé, restant, engagé, % utilisé).
   Implémenté comme une vue SQL (`public.budget_summary`) sur
   `weddings.budget_total` + `SUM(budget_items.spent)`.
+- **"Complétude du profil" (dashboard, §5)** : la maquette du cahier des
+  charges montre une "Progression" à 42 %, implicitement basée sur les
+  tâches accomplies — mais les tâches n'existent pas encore (PHASE 4).
+  Plutôt que d'inventer un chiffre, la carte affiche pour l'instant le %
+  de champs du mariage renseignés (date, lieu, invités, budget, style,
+  ambiance, cérémonie, gamme), clairement intitulée "Complétude du
+  profil" pour ne pas se faire passer pour la progression des tâches.
+  À remplacer/compléter par un vrai indicateur de progression une fois
+  les tâches disponibles.
 - **Moteur Wedding Match** : fonctions pures, sans dépendance externe,
   regroupées par critère (`packages/matching/src/engine.ts`) pour rester
   auditables — aligné avec le Principe 2 (pas d'IA gadget). Les poids
