@@ -78,10 +78,36 @@ ci-dessous pour ce qui a été fait et validé.
 - **Reste à faire par l'utilisateur, pas par le code** : configurer les
   mêmes variables d'environnement (`NEXT_PUBLIC_SUPABASE_URL`,
   `NEXT_PUBLIC_SUPABASE_ANON_KEY`) sur le déploiement Vercel une fois
-  celui-ci reconnecté (voir section déploiement) ; générer les types
+  celui-ci reconnecté (voir « Déploiement Vercel » ci-dessous — bloqué
+  pour une raison indépendante de Supabase) ; générer les types
   TypeScript Supabase (`supabase gen types typescript`) pour remplacer
   le typage faible actuel des appels `.from(...)` — non fait dans cette
   passe, toujours listé comme limitation connue plus bas.
+
+## Déploiement Vercel — bloqué sur une autorisation externe
+
+Tentative de reconnexion en mode lié à GitHub (`create_git_project`,
+préférable à l'upload manuel utilisé — et abandonné à la demande de
+l'utilisateur — en PHASE 1/2) : **échoue systématiquement**, avec deux
+noms de projet différents testés (`wedding-univers-web`,
+`wedding-univers-mvp`). Le projet Vercel se crée, mais la vérification du
+lien Git échoue immédiatement avec `404 Project not found` côté GitHub,
+et le projet créé redevient introuvable juste après (aucun résidu à
+nettoyer — l'échec est propre). Même échec identique sur un deuxième nom
+totalement différent (donc pas un conflit de nom) : **l'intégration
+GitHub de Vercel ne semble pas autorisée à voir le dépôt
+`alexisguliana-marketing/index`.**
+
+C'est une action côté utilisateur, pas quelque chose qu'un outil peut
+résoudre depuis ce dépôt : dans le dashboard Vercel
+(vercel.com → Add New → Project → Import Git Repository), il faut
+installer/autoriser l'app GitHub "Vercel" pour ce dépôt (ou pour tout le
+compte `alexisguliana-marketing`), puis soit relancer l'import depuis le
+dashboard, soit redemander la connexion via l'outil une fois
+l'autorisation posée. Une fois cette autorisation en place, la
+reconnexion elle-même est une opération d'une minute (déjà tentée deux
+fois, échoue au même endroit à chaque fois — donc pas la peine de
+réessayer sans changer l'autorisation d'abord).
 
 ## Fonctionnalités terminées
 
