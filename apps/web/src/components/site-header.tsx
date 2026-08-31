@@ -32,6 +32,9 @@ export async function SiteHeader() {
             <Link href="/mon-mariage/equipe" className="hover:text-gold">
               Équipe
             </Link>
+            <Link href="/mon-mariage/recommandations" className="hover:text-gold">
+              Recommandations
+            </Link>
             <Link href="/compte" className="hover:text-gold">
               Mon compte
             </Link>

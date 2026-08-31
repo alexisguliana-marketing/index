@@ -1,10 +1,10 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 10 (portfolio) terminée, sur
-PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
+Dernière mise à jour : 2026-08-31 — PHASE 11 (Wedding Match) terminée,
+sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
 PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5 (budget),
 PHASE 6 (invités), PHASE 7 (collaborateurs), PHASE 8 (profils
-professionnels) et PHASE 9 (recherche/filtres).
+professionnels), PHASE 9 (recherche/filtres) et PHASE 10 (portfolio).
 
 ## Fonctionnalités terminées
 
@@ -246,11 +246,45 @@ professionnels) et PHASE 9 (recherche/filtres).
     Supabase connecté — voir Problèmes connus — mais la route rend sans
     erreur), en plus de typecheck/lint/build.
 
+- **PHASE 11 — Wedding Match, sens couple → prestataires (§16-17)** :
+  - `/mon-mariage/recommandations` : recommandations par métier
+    (onglets), calculées par `rankVendorsForCouple`/`topReasons`
+    (`packages/matching`, moteur algorithmique déjà construit et testé
+    en PHASE 0) branché sur de vraies données — mariage, prestataires
+    publiés, prestations (fourchette de prix), zones (coordonnées),
+    disponibilités à la date du mariage, styles déduits du portfolio
+    (PHASE 10). Score toujours accompagné de ses raisons (`topReasons`,
+    jamais un pourcentage nu — §17).
+  - Nouveau crosswalk `VENDOR_TO_TASK_CATEGORY`
+    (`packages/config/src/vendor-task-category-map.ts`, testé) : les
+    métiers prestataires (§12) et les catégories de tâches/budget (§6)
+    sont deux taxonomies indépendantes qui ne partagent pas de slugs ;
+    ce crosswalk sert uniquement à retrouver le poste budgétaire
+    pertinent (ex. "Photographie") pour le critère "Budget" du score.
+  - Dashboard (`/mon-mariage`) : carte "Recommandations" branchée sur la
+    vraie fonctionnalité ; lien "Recommandations" ajouté à l'en-tête.
+  - **Scores non mis en cache** : la table `matches` (§29, PHASE 0) n'a
+    volontairement aucune policy RLS d'écriture pour les utilisateurs
+    authentifiés — le commentaire de la migration
+    `20260101000300_rls_policies.sql` est explicite : "scores are written
+    by trusted server-side code (service role key)". Aucune clé service
+    role n'est configurée dans l'app (et personne n'a demandé qu'elle le
+    soit). La PHASE 11 respecte donc cette conception : les scores sont
+    calculés à la demande, à chaque affichage, jamais persistés. Voir
+    Décisions techniques pour le détail et la piste d'évolution.
+  - **Sens inverse ("opportunités" côté pro, §18) non construit** :
+    `rankCouplesForVendor` existe déjà dans `packages/matching` (fonction
+    pure, symétrique), mais l'alimenter demanderait d'exposer les champs
+    de matching de mariages **auxquels le prestataire n'appartient pas**
+    (date, budget, style...) — aucune source de données respectueuse de
+    la vie privée n'existe encore pour ça (pas de pages de mariage
+    publiques, pas de mise en relation via favoris/messagerie). Reporté
+    à une itération future plutôt que bricolé. Voir Décisions techniques.
+
 ## En cours
 
-Rien — la PHASE 10 est terminée. Prochaine étape : PHASE 11 (Wedding
-Match — brancher le moteur `packages/matching`, déjà construit et testé
-depuis la PHASE 0, sur de vraies données).
+Rien — la PHASE 11 est terminée. Prochaine étape : PHASE 12
+(favoris/contact).
 
 ## Problèmes connus / limitations assumées
 
@@ -449,6 +483,36 @@ depuis la PHASE 0, sur de vraies données).
   mariage par le prestataire, qui n'existe pas encore. Laissé à `null`
   pour l'instant ; alimente potentiellement la future page "Mariages
   réels" (hors périmètre MVP, voir roadmap macro).
+- **Critère "Localisation" toujours neutre en PHASE 11** : le moteur a
+  besoin de coordonnées lat/lng des deux côtés ; `vendor_locations` en a
+  (PHASE 0), mais `weddings.location` reste un texte libre sans
+  géocodage (même limitation déjà notée en PHASE 9 pour le filtre
+  distance de `/prestataires`). Le critère "Localisation" retombe donc
+  systématiquement sur le score neutre 0.5 ("Localisation non
+  renseignée.") plutôt que de biaiser le classement avec une fausse
+  précision. Un géocodage de `weddings.location` (ou un couple de champs
+  lat/lng saisis à la création) débloquerait ce critère sans toucher au
+  moteur lui-même — c'est tout l'intérêt de son découpage en critères
+  indépendants.
+- **Critères "Type de mariage" et "Préférences" toujours neutres** :
+  `vendor.ceremonyTypes` et `vendor.tags` n'ont pas de colonne source en
+  base (rien dans le schéma §29 ne capture "quels types de cérémonie ce
+  prestataire couvre" ni des tags libres) ; passés à `[]` systématiquement
+  plutôt qu'inventés. Pareil pour `couple.preferenceTags` (aucun champ
+  "préférences" sur `weddings`). Les deux critères sont donc actifs dans
+  le moteur mais neutres avec les données actuelles — comportement
+  documenté, pas un bug.
+- **Budget par catégorie = somme des postes déjà budgétés** : quand
+  plusieurs `budget_items` de la même catégorie existent pour un mariage
+  (ex. "Photographe" + "Album photo" en Photographie), le critère
+  "Budget" du score additionne leurs montants prévus plutôt que de n'en
+  retenir qu'un seul — hypothèse simple assumée pour la V1, cohérente
+  avec l'idée qu'ils représentent l'enveloppe totale de la catégorie.
+- **Recommandations mono-métier** : `/mon-mariage/recommandations`
+  affiche un métier à la fois (onglets), jamais un classement mélangeant
+  photographes et traiteurs — le budget et la capacité n'ont pas la même
+  échelle d'un métier à l'autre, un score global inter-métiers n'aurait
+  pas de sens.
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs
@@ -490,8 +554,7 @@ depuis la PHASE 0, sur de vraies données).
 
 ## Prochaine étape
 
-**PHASE 10 — Portfolio** : upload et gestion des médias
-(`vendor_portfolio_items` + `media`, buckets de stockage déjà en place
-PHASE 0), tagging par style/service/contexte (`VENDOR_CONTEXT_TAGS`),
-affichage du portfolio sur `/prestataires/[id]` — première fonctionnalité
-à toucher au stockage de fichiers (Supabase Storage) dans ce projet.
+**PHASE 12 — Favoris/contact** : `favorites` et `collections` (déjà en
+base, PHASE 0) pour sauvegarder prestataires/photos/inspirations par
+mariage, et un premier point de contact couple → prestataire (avant la
+vraie messagerie de la PHASE 13).

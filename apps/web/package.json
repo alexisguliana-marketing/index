@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@wedding-univers/config": "workspace:*",
+    "@wedding-univers/matching": "workspace:*",
     "@wedding-univers/types": "workspace:*",
     "@wedding-univers/ui": "workspace:*",
     "@wedding-univers/validation": "workspace:*",

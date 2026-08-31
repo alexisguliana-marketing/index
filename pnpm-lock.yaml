@@ -60,6 +60,9 @@ importers:
       '@wedding-univers/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@wedding-univers/matching':
+        specifier: workspace:*
+        version: link:../../packages/matching
       '@wedding-univers/types':
         specifier: workspace:*
         version: link:../../packages/types

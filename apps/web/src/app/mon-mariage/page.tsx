@@ -219,8 +219,14 @@ export default async function MonMariagePage() {
 
         <Card title="Recommandations">
           <p className="text-sm text-ink-soft">
-            La découverte de prestataires arrive bientôt.
+            Des prestataires sélectionnés pour vous, avec les raisons de chaque recommandation.
           </p>
+          <a
+            href="/mon-mariage/recommandations"
+            className="mt-3 inline-block text-xs font-medium text-gold hover:underline"
+          >
+            Voir mes recommandations →
+          </a>
         </Card>
       </div>
 

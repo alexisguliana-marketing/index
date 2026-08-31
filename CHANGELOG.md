@@ -3,7 +3,28 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 10 : Portfolio
+## [Unreleased] — PHASE 11 : Wedding Match
+
+### Added
+
+- `/mon-mariage/recommandations` (§16-17) : recommandations de
+  prestataires par métier, calculées par le moteur `packages/matching`
+  branché sur de vraies données (budget, date, style, disponibilité,
+  styles du portfolio) — score toujours accompagné de ses raisons.
+- `VENDOR_TO_TASK_CATEGORY` (`@wedding-univers/config`, testé) : crosswalk
+  entre métiers prestataires et catégories de tâches/budget.
+- Dashboard (`/mon-mariage`) : carte "Recommandations" branchée sur la
+  vraie fonctionnalité ; lien "Recommandations" dans l'en-tête.
+
+### Notes
+
+- Scores calculés à la demande, non mis en cache dans `matches` (la table
+  n'a pas de policy d'écriture pour les utilisateurs authentifiés — par
+  conception, PHASE 0).
+- Matching inverse ("opportunités" côté pro, §18) non construit — pas de
+  source de données respectueuse de la vie privée pour l'instant.
+
+## PHASE 10 : Portfolio
 
 ### Added
 
