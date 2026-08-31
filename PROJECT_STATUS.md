@@ -1,7 +1,7 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 13 (messagerie) terminée, sur
-PHASE 0 (fondation) à PHASE 12 (favoris/contact) incluses.
+Dernière mise à jour : 2026-08-31 — PHASE 14 (notifications) terminée,
+sur PHASE 0 (fondation) à PHASE 13 (messagerie) incluses.
 
 ## Fonctionnalités terminées
 
@@ -306,10 +306,35 @@ PHASE 0 (fondation) à PHASE 12 (favoris/contact) incluses.
     messages (RLS `conversation_members` n'autorise que l'auto-ajout) —
     comportement voulu, pas un bug.
 
+- **PHASE 14 — Notifications (§24)** :
+  - Migration `20260101000800_notification_triggers.sql` : deux triggers
+    `SECURITY DEFINER` (même famille que `handle_new_conversation`,
+    PHASE 13) qui créent de vraies notifications sans clé service role —
+    `notifications` n'a pas de policy INSERT pour les utilisateurs
+    authentifiés, par conception (PHASE 0). Testés sur Postgres local :
+    nouveau message → notifie les autres participants de la conversation ;
+    nouveau membre → notifie les membres existants du mariage (l'admin
+    créateur ne se notifie jamais lui-même, la boucle ne trouve
+    simplement aucun autre membre à ce moment-là).
+  - `/notifications` : liste, marquage lu individuel et global.
+  - Badge de compteur non lu dans l'en-tête (🔔).
+  - Seuls `new_message` et `member_joined` sont déclenchés pour l'instant
+    parmi les types prévus en base (`task_created`, `task_overdue`,
+    `vendor_reply`, `new_favorite`, `recommendation`, `project_activity`
+    n'ont pas de trigger) — les deux couvrent les événements les plus
+    fréquents (arrivée d'un message, changement d'équipe) ; les autres
+    types restent définis dans le schéma pour une extension future du
+    même mécanisme.
+  - **Push mobile non construit** : §24 prévoit "web (internes) + mobile
+    (push)" ; le push nécessite l'app mobile et un service de push
+    (Expo Notifications), aucun des deux n'existe encore à ce stade
+    (mobile arrive en PHASE 15). Les notifications web fonctionnent
+    dès aujourd'hui.
+
 ## En cours
 
-Rien — la PHASE 13 est terminée. Prochaine étape : PHASE 14
-(notifications).
+Rien — la PHASE 14 est terminée. Prochaine étape : PHASE 15 (application
+mobile).
 
 ## Problèmes connus / limitations assumées
 
@@ -538,6 +563,12 @@ Rien — la PHASE 13 est terminée. Prochaine étape : PHASE 14
   photographes et traiteurs — le budget et la capacité n'ont pas la même
   échelle d'un métier à l'autre, un score global inter-métiers n'aurait
   pas de sens.
+- **En-tête de navigation en ligne droite** : chaque phase a ajouté son
+  lien à `SiteHeader` (Tâches, Budget, Invités, Équipe, Recommandations,
+  Favoris, Messages, 🔔...) sans jamais regrouper — une vraie IA
+  (menu/dropdown) serait plus adaptée mais représente un chantier de
+  polish transverse, pas une fonctionnalité de phase ; noté comme dette
+  UX assumée plutôt que retravaillé au fil de l'eau.
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs
@@ -579,7 +610,8 @@ Rien — la PHASE 13 est terminée. Prochaine étape : PHASE 14
 
 ## Prochaine étape
 
-**PHASE 14 — Notifications** : triggers SQL `SECURITY DEFINER` (mêmes
-principes que `handle_new_conversation`) pour générer de vraies
-notifications (nouveau message, membre rejoint) sans clé service role,
-plus une UI de lecture/marquage lu.
+**PHASE 15 — Application mobile** : navigation (Expo Router), client
+Supabase mobile (AsyncStorage), écrans d'authentification puis un
+tableau de bord mariage minimal dans `apps/mobile` — le rattrapage
+explicitement prévu depuis la PHASE 1 (« PHASE 1 implémentée web
+uniquement »).

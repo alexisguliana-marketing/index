@@ -6,6 +6,16 @@ export async function SiteHeader() {
   const supabase = await createClient();
   const user = supabase ? (await supabase.auth.getUser()).data.user : null;
 
+  let unreadNotifications = 0;
+  if (supabase && user) {
+    const { count } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .is("read_at", null);
+    unreadNotifications = count ?? 0;
+  }
+
   return (
     <header className="flex items-center justify-between px-6 py-5 sm:px-12">
       <Link href="/" className="font-[family-name:var(--font-display)] text-lg italic text-ink">
@@ -40,6 +50,9 @@ export async function SiteHeader() {
             </Link>
             <Link href="/mon-mariage/messages" className="hover:text-gold">
               Messages
+            </Link>
+            <Link href="/notifications" className="hover:text-gold">
+              🔔{unreadNotifications > 0 && ` ${unreadNotifications}`}
             </Link>
             <Link href="/compte" className="hover:text-gold">
               Mon compte

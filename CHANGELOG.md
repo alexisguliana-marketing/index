@@ -3,6 +3,20 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
+## [Unreleased] — PHASE 14 : Notifications
+
+### Added
+
+- Migration `20260101000800_notification_triggers.sql` : notifications
+  réelles générées par triggers `SECURITY DEFINER` (nouveau message,
+  nouveau membre de l'équipe), testées sur Postgres local.
+- `/notifications` : liste, marquage lu individuel et global.
+- Badge de compteur non lu dans l'en-tête.
+
+### Notes
+
+- Push mobile non construit (nécessite la PHASE 15).
+
 ## [Unreleased] — PHASE 13 : Messagerie
 
 ### Added
