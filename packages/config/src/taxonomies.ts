@@ -4,6 +4,7 @@ import type {
   GuestGroup,
   TaskCategory,
   VendorCategorySlug,
+  WeddingRole,
   WeddingStyle,
 } from "@wedding-univers/types";
 
@@ -54,6 +55,15 @@ export const TASK_CATEGORIES: { slug: TaskCategory; label: string }[] = [
   { slug: "ceremony", label: "Cérémonie" },
   { slug: "administrative", label: "Administratif" },
   { slug: "other", label: "Autre" },
+];
+
+/** Wedding member roles (cahier des charges §10-11). */
+export const WEDDING_ROLES: { slug: WeddingRole; label: string }[] = [
+  { slug: "admin", label: "Administrateur" },
+  { slug: "planner", label: "Organisateur" },
+  { slug: "witness", label: "Témoin" },
+  { slug: "guest_manager", label: "Responsable invités" },
+  { slug: "member", label: "Membre" },
 ];
 
 /** Guest groups (cahier des charges §9). */

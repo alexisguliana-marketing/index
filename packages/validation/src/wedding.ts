@@ -97,3 +97,13 @@ export const createGuestSchema = z.object({
 });
 
 export type CreateGuestInput = z.infer<typeof createGuestSchema>;
+
+export const weddingRoleSchema = z.enum(["admin", "witness", "planner", "guest_manager", "member"]);
+
+export const inviteWeddingMemberSchema = z.object({
+  weddingId: z.string().uuid(),
+  email: z.string().trim().email(),
+  role: weddingRoleSchema,
+});
+
+export type InviteWeddingMemberInput = z.infer<typeof inviteWeddingMemberSchema>;

@@ -3,7 +3,24 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 6 : Invités
+## [Unreleased] — PHASE 7 : Collaborateurs
+
+### Added
+
+- `/mon-mariage/equipe` (§10-11) : liste des membres avec leur rôle,
+  invitation par email (comptes déjà inscrits), changement de rôle,
+  retrait d'un membre par un admin ou par lui-même.
+- Migration `20260101000600_invite_lookup.sql` : fonction
+  `find_invitable_user` (résolution email → compte, sans exposer
+  d'email), testée sur Postgres local.
+- Garde-fou : impossible de changer le rôle du dernier administrateur ou
+  de le retirer.
+- `WEDDING_ROLES` (`@wedding-univers/config`) et
+  `inviteWeddingMemberSchema` (`@wedding-univers/validation`).
+- Dashboard (`/mon-mariage`) et en-tête de site : lien vers
+  `/mon-mariage/equipe`.
+
+## PHASE 6 : Invités
 
 ### Added
 

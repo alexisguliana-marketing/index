@@ -1,8 +1,9 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 6 (invités) terminée, sur
-PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
-PHASE 3 (dashboard), PHASE 4 (tâches et planning) et PHASE 5 (budget).
+Dernière mise à jour : 2026-08-31 — PHASE 7 (collaborateurs) terminée,
+sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
+PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5 (budget) et
+PHASE 6 (invités).
 
 ## Fonctionnalités terminées
 
@@ -156,9 +157,31 @@ PHASE 3 (dashboard), PHASE 4 (tâches et planning) et PHASE 5 (budget).
   - Dashboard (`/mon-mariage`) et en-tête de site pointent désormais vers
     `/mon-mariage/invites`.
 
+- **PHASE 7 — Collaborateurs (§10-11)** :
+  - `/mon-mariage/equipe` : liste des membres du mariage avec leur rôle,
+    invitation par email (réservée aux admins), changement de rôle,
+    retrait d'un membre par un admin, et un membre peut se retirer
+    lui-même (« Quitter ce mariage »).
+  - Nouvelle fonction SQL `public.find_invitable_user(target_email)`
+    (migration `20260101000600_invite_lookup.sql`, `SECURITY DEFINER`) :
+    résout un email vers un compte existant (id + prénom uniquement,
+    jamais l'email) sans ajouter de colonne `email` largement lisible sur
+    `profiles` — voir Décisions techniques pour le raisonnement complet.
+  - Garde-fou : impossible de changer le rôle du dernier administrateur
+    ou de le retirer (éviterait un mariage sans administrateur). Contrôlé
+    à la fois dans l'UI (bouton désactivé) et dans les Server Actions.
+  - S'appuie entièrement sur les policies RLS `wedding_members` déjà
+    présentes depuis la PHASE 0 (lecture par les membres, invitation/
+    changement de rôle par un admin, suppression par un admin ou par
+    l'intéressé lui-même) — aucune nouvelle policy nécessaire.
+  - `WEDDING_ROLES` (libellés français) dans `@wedding-univers/config` ;
+    `inviteWeddingMemberSchema` dans `@wedding-univers/validation`.
+  - Dashboard et en-tête de site pointent vers `/mon-mariage/equipe`.
+
 ## En cours
 
-Rien — la PHASE 6 est terminée. Prochaine étape : PHASE 7 (collaborateurs).
+Rien — la PHASE 7 est terminée. Prochaine étape : PHASE 8 (profils
+professionnels).
 
 ## Problèmes connus / limitations assumées
 
@@ -170,12 +193,15 @@ Rien — la PHASE 6 est terminée. Prochaine étape : PHASE 7 (collaborateurs).
   `supabase db reset`** : le sandbox de développement n'a pas de daemon
   Docker actif (le CLI Supabase est disponible via `npx`, mais nécessite
   Docker pour la stack locale complète). Validation alternative effectuée :
-  application manuelle des 5 fichiers de migration + seed sur un Postgres
-  16 local, avec des tables `auth.*`/`storage.*` et rôles `anon` /
-  `authenticated` / `service_role` reconstitués à l'identique de ce que
-  fournit Supabase. Toutes les migrations s'appliquent sans erreur et RLS
-  est actif sur 100% des tables `public`. **À revalider avec le vrai CLI
-  Supabase dès que Docker est disponible.**
+  application manuelle des fichiers de migration (6 à ce jour) + seed sur
+  un Postgres 16 local, avec des tables `auth.*`/`storage.*` et rôles
+  `anon` / `authenticated` / `service_role` reconstitués à l'identique de
+  ce que fournit Supabase. Toutes les migrations s'appliquent sans erreur
+  et RLS est actif sur 100% des tables `public`. La fonction
+  `find_invitable_user` (PHASE 7) a été testée avec ce même Postgres local
+  (recherche insensible à la casse, aucune fuite d'email, aucun résultat
+  pour un email inconnu). **À revalider avec le vrai CLI Supabase dès que
+  Docker est disponible.**
 - **Permissions par rôle** : RLS applique déjà les permissions §10 pour
   tâches/budget/invités (voir `supabase/migrations/..._rls_policies.sql`),
   en miroir de `packages/config/src/permissions.ts`. Garder les deux
@@ -269,6 +295,37 @@ Rien — la PHASE 6 est terminée. Prochaine étape : PHASE 7 (collaborateurs).
   planner, guest_manager) est dans la matrice pour les actions d'écriture.
   Cohérent avec §10 qui ne liste pas de droit de lecture distinct pour les
   invités.
+- **Invitation par email limitée aux comptes déjà inscrits** : il n'existe
+  pas d'infrastructure d'envoi d'email d'invitation en V1 (pas de service
+  email configuré, pas de flux "créer un compte à partir d'un lien
+  d'invitation"). `find_invitable_user` ne peut donc résoudre qu'un email
+  déjà associé à un compte Wedding Univers ; sinon l'admin voit un message
+  clair l'invitant à demander à la personne de créer un compte d'abord.
+  Un vrai flux d'invitation par email (avec envoi de lien, compte créé à
+  l'acceptation) est un enrichissement naturel pour une itération future,
+  pas un manque de la PHASE 7.
+- **Pas de colonne `email` sur `profiles`** : la policy RLS existante
+  "profiles are readable by any authenticated user" (`using (true)`,
+  PHASE 0) rend déjà `full_name`/`avatar_url` visibles à tout utilisateur
+  connecté ; y ajouter `email` aurait permis à n'importe qui d'aspirer la
+  liste complète des emails inscrits. `find_invitable_user` évite ce
+  problème : fonction `SECURITY DEFINER` qui lit `auth.users.email`
+  directement, recherche par correspondance exacte uniquement, et ne
+  renvoie jamais l'email (juste id + prénom) — impossible à énumérer, au
+  pire on confirme qu'un email précis est déjà inscrit (compromis standard
+  des flux "inviter par email").
+- **Invitation = ajout immédiat, pas d'étape d'acceptation** : `joined_at`
+  reste nullable en base (prévu dès la PHASE 0 pour un futur flux avec
+  acceptation), mais la PHASE 7 le renseigne immédiatement à l'invitation
+  — comme la plupart des outils de collaboration simples (ajouter un
+  collaborateur par email donne un accès immédiat). Pas d'écran
+  d'acceptation ni de notification construits pour cette phase.
+- **Garde-fou "dernier administrateur"** : appliqué côté UI (contrôles
+  désactivés) et dans les Server Actions (`updateMemberRoleAction`,
+  `removeMemberAction`), mais pas en RLS/contrainte base — un accès direct
+  à la base pourrait donc encore vider les admins d'un mariage. Acceptable
+  pour la V1 (aucun accès direct à la base prévu en dehors de l'admin
+  Supabase du projet) ; à durcir avec un trigger si besoin plus tard.
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs
@@ -310,9 +367,9 @@ Rien — la PHASE 6 est terminée. Prochaine étape : PHASE 7 (collaborateurs).
 
 ## Prochaine étape
 
-**PHASE 7 — Collaborateurs** : UI pour inviter/gérer les membres du
-Projet Mariage (`wedding_members`, rôles admin/witness/planner/
-guest_manager/member déjà définis en PHASE 0), aujourd'hui uniquement
-peuplée par le créateur via le trigger `handle_new_wedding`. Permettra
-enfin de tester en conditions réelles les contrôles `hasPermission`
-utilisés depuis la PHASE 4 (un second membre avec un rôle non-admin).
+**PHASE 8 — Profils professionnels** : création/édition d'un profil
+prestataire public (`vendors` + tables associées, déjà en base depuis la
+PHASE 0 — catégories hiérarchiques, prestations/tarifs, zone
+d'intervention, disponibilités, portfolio). Première fonctionnalité
+côté "Professionnel" (jusqu'ici tout le développement a servi le côté
+"Couple").

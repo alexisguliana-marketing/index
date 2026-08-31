@@ -188,6 +188,9 @@ export default async function MonMariagePage() {
           <a href="/mon-mariage/invites" className="mt-3 inline-block text-xs font-medium text-gold hover:underline">
             Gérer la liste des invités →
           </a>
+          <a href="/mon-mariage/equipe" className="mt-1 block text-xs font-medium text-gold hover:underline">
+            Gérer l&apos;équipe →
+          </a>
         </Card>
       </div>
 
