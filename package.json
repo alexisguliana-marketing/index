@@ -1,0 +1,24 @@
+{
+  "name": "wedding-univers",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Wedding Univers — la plateforme qui réunit tout l'univers du mariage.",
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev:web": "pnpm --filter @wedding-univers/web dev",
+    "dev:mobile": "pnpm --filter @wedding-univers/mobile start",
+    "build:web": "pnpm --filter @wedding-univers/web build",
+    "build": "pnpm -r --filter=./packages/* build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3"
+  }
+}
