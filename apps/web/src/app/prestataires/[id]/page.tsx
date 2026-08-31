@@ -71,6 +71,23 @@ export default async function PrestataireDetailPage({ params }: PageProps<"/pres
     ? await supabase.from("vendor_categories").select("id, label").in("id", categoryIds)
     : { data: [] as { id: string; label: string }[] };
 
+  const { data: portfolioItems } = await supabase
+    .from("vendor_portfolio_items")
+    .select("id, media_id")
+    .eq("vendor_id", id)
+    .order("created_at", { ascending: false })
+    .limit(12);
+
+  const mediaIds = (portfolioItems ?? []).map((item) => item.media_id as string);
+  const { data: mediaRows } = mediaIds.length
+    ? await supabase.from("media").select("id, storage_path").in("id", mediaIds)
+    : { data: [] as { id: string; storage_path: string }[] };
+  const pathByMediaId = new Map((mediaRows ?? []).map((row) => [row.id, row.storage_path]));
+  const portfolioUrls = (portfolioItems ?? [])
+    .map((item) => pathByMediaId.get(item.media_id as string))
+    .filter((path): path is string => Boolean(path))
+    .map((path) => supabase.storage.from("vendor-portfolio").getPublicUrl(path).data.publicUrl);
+
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-16 sm:py-20">
       <p className="mb-2 text-xs tracking-[0.3em] text-ink-soft uppercase">Prestataire</p>
@@ -146,6 +163,19 @@ export default async function PrestataireDetailPage({ params }: PageProps<"/pres
             </ul>
           )}
         </Card>
+
+        {portfolioUrls.length > 0 && (
+          <Card title="Portfolio">
+            <ul className="grid grid-cols-3 gap-2">
+              {portfolioUrls.map((url) => (
+                <li key={url} className="overflow-hidden rounded-md">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt="" className="aspect-square w-full object-cover" />
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
 
         {(availability ?? []).length > 0 && (
           <Card title="Prochaines indisponibilités">

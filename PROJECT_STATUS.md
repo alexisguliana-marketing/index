@@ -1,10 +1,10 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 9 (recherche/filtres) terminée,
-sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
+Dernière mise à jour : 2026-08-31 — PHASE 10 (portfolio) terminée, sur
+PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
 PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5 (budget),
-PHASE 6 (invités), PHASE 7 (collaborateurs) et PHASE 8 (profils
-professionnels).
+PHASE 6 (invités), PHASE 7 (collaborateurs), PHASE 8 (profils
+professionnels) et PHASE 9 (recherche/filtres).
 
 ## Fonctionnalités terminées
 
@@ -223,16 +223,48 @@ professionnels).
     l'état "Configuration requise" attendu sans projet Supabase
     connecté), en plus de typecheck/lint/build.
 
+- **PHASE 10 — Portfolio (§13)** :
+  - `/pro/portfolio` : upload de photos (Supabase Storage, bucket
+    `vendor-portfolio` déjà en place PHASE 0), tag optionnel par style
+    (`WEDDING_STYLES`), contexte (`VENDOR_CONTEXT_TAGS` — mariage/
+    cérémonie/réception/fiançailles) et prestation liée, suppression
+    (fichier + ligne `media`, `vendor_portfolio_items` supprimée en
+    cascade). Lien depuis `/pro/profil`.
+  - `/prestataires/[id]` : nouvelle carte "Portfolio" (grille d'images)
+    quand le prestataire en a — première fois que le site affiche des
+    fichiers uploadés par un utilisateur.
+  - Upload géré par une Server Action recevant directement le `File` via
+    `FormData` (`encType="multipart/form-data"` sur un formulaire natif,
+    aucun JavaScript client nécessaire) — cohérent avec le reste du site,
+    aucune nouvelle dépendance.
+  - Sécurité en profondeur déjà en place depuis la PHASE 0, aucune policy
+    nouvelle : la policy de stockage exige `owns_vendor` sur le dossier
+    `{vendor_id}/...`, et `vendor_portfolio_items` exige `owns_vendor` en
+    RLS — un utilisateur ne peut ni uploader dans le dossier d'un autre
+    prestataire, ni rattacher un média à un profil qui n'est pas le sien.
+  - Testé avec `next dev` réel (upload non exercé faute de projet
+    Supabase connecté — voir Problèmes connus — mais la route rend sans
+    erreur), en plus de typecheck/lint/build.
+
 ## En cours
 
-Rien — la PHASE 9 est terminée. Prochaine étape : PHASE 10 (portfolio).
+Rien — la PHASE 10 est terminée. Prochaine étape : PHASE 11 (Wedding
+Match — brancher le moteur `packages/matching`, déjà construit et testé
+depuis la PHASE 0, sur de vraies données).
 
 ## Problèmes connus / limitations assumées
 
 - **Aucun projet Supabase distant n'a été provisionné.** Cela impliquerait
   de choisir une organisation/un plan de facturation — décision produit
   laissée à l'utilisateur. `apps/web/.env.example` documente les variables
-  à renseigner une fois le projet créé.
+  à renseigner une fois le projet créé. Conséquence PHASE 10 : l'upload
+  vers Supabase Storage (`/pro/portfolio`) n'a pas pu être exercé de bout
+  en bout (nécessite un vrai bucket) — seule la page elle-même a été
+  vérifiée (rendu sans erreur avec `next dev`). Le bucket
+  `vendor-portfolio` et ses policies sont bien créés par la migration
+  `20260101000400_storage_buckets.sql`, validée séparément (voir
+  ci-dessous). **À tester en conditions réelles dès qu'un projet est
+  connecté.**
 - **Les migrations n'ont pas été validées via `supabase start` /
   `supabase db reset`** : le sandbox de développement n'a pas de daemon
   Docker actif (le CLI Supabase est disponible via `npx`, mais nécessite
@@ -403,6 +435,20 @@ Rien — la PHASE 9 est terminée. Prochaine étape : PHASE 10 (portfolio).
   non implémenté pour rester dans le périmètre de cette phase.
   Ces trois filtres restent dans le schéma de validation, prêts à être
   branchés dès que leurs données sous-jacentes existent.
+- **Portfolio : photos uniquement, pas de vidéo, pas de redimensionnement**
+  : `media.kind` accepte `'video'` en base (prévu au schéma §13/§29), mais
+  la PHASE 10 ne construit que l'upload photo — la lecture vidéo (player,
+  éventuelle transcodage/miniature) est un morceau de travail à part,
+  hors périmètre de cette phase. Les images sont stockées telles
+  qu'uploadées, sans redimensionnement ni compression côté serveur :
+  Supabase Storage sert le fichier original ; un pipeline d'optimisation
+  d'image est un enrichissement futur, pas un manque de cette phase.
+- **`vendor_portfolio_items.wedding_id` non exposé** : la colonne existe
+  (le vrai mariage où la photo a été prise, "quand connu", §13) mais
+  rattacher une photo à un mariage précis demanderait une recherche de
+  mariage par le prestataire, qui n'existe pas encore. Laissé à `null`
+  pour l'instant ; alimente potentiellement la future page "Mariages
+  réels" (hors périmètre MVP, voir roadmap macro).
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs

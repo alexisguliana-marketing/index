@@ -3,7 +3,18 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 9 : Recherche/filtres
+## [Unreleased] — PHASE 10 : Portfolio
+
+### Added
+
+- `/pro/portfolio` (§13) : upload de photos vers Supabase Storage
+  (bucket `vendor-portfolio`), tag optionnel par style/contexte/
+  prestation liée, suppression (fichier + entrée base).
+- `/prestataires/[id]` : carte "Portfolio" (grille d'images) quand le
+  prestataire en a.
+- Lien "Gérer mon portfolio" depuis `/pro/profil`.
+
+## PHASE 9 : Recherche/filtres
 
 ### Added
 

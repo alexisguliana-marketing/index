@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { VENDOR_PROFESSIONS } from "@wedding-univers/config";
@@ -129,6 +130,13 @@ export default async function ProfilProPage() {
           </p>
         )}
       </form>
+
+      <Link
+        href="/pro/portfolio"
+        className="mb-8 inline-block text-sm font-medium text-gold hover:underline"
+      >
+        Gérer mon portfolio →
+      </Link>
 
       <div className="grid grid-cols-1 gap-4">
         <Card title="Profil">
