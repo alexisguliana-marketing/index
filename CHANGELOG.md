@@ -3,7 +3,22 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 7 : Collaborateurs
+## [Unreleased] — PHASE 8 : Profils professionnels
+
+### Added
+
+- `/pro/profil/creer` (§11) : création du profil professionnel (nom,
+  accroche, description, ville, zone de déplacement, expérience,
+  capacité, métiers).
+- `/pro/profil` : tableau de bord pro — publication/dépublication,
+  gestion des métiers, prestations/tarifs, zones d'intervention et
+  disponibilités.
+- `/compte` propose désormais "Créer mon profil pro" en plus de "Créer
+  mon mariage" (aucun champ "type de compte" — le type se déduit de ce
+  que l'utilisateur crée, décision PHASE 1).
+- `Vendor.isPublished` ajouté à `@wedding-univers/types`.
+
+## PHASE 7 : Collaborateurs
 
 ### Added
 

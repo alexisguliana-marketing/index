@@ -31,9 +31,10 @@ export default async function ComptePage() {
     redirect("/connexion");
   }
 
-  const [{ data: profile }, { data: membership }] = await Promise.all([
+  const [{ data: profile }, { data: membership }, { data: vendor }] = await Promise.all([
     supabase.from("profiles").select("full_name").eq("id", user.id).single(),
     supabase.from("wedding_members").select("wedding_id").eq("user_id", user.id).limit(1).maybeSingle(),
+    supabase.from("vendors").select("id").eq("owner_user_id", user.id).maybeSingle(),
   ]);
 
   return (
@@ -52,6 +53,18 @@ export default async function ComptePage() {
           className="text-sm font-medium text-ink underline hover:text-gold"
         >
           {membership ? "Voir mon mariage" : "Créer mon mariage"}
+        </Link>
+      </div>
+
+      <div className="mb-10 flex items-center justify-between rounded-lg border border-border bg-white px-5 py-4">
+        <span className="text-sm text-ink-soft">
+          {vendor ? "Votre profil professionnel" : "Vous êtes un(e) professionnel(le) du mariage ?"}
+        </span>
+        <Link
+          href={vendor ? "/pro/profil" : "/pro/profil/creer"}
+          className="text-sm font-medium text-ink underline hover:text-gold"
+        >
+          {vendor ? "Voir mon profil pro" : "Créer mon profil pro"}
         </Link>
       </div>
 

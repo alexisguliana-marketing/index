@@ -13,6 +13,7 @@ export interface Vendor {
   capacityMax: number | null;
   ratingAverage: number | null;
   ratingCount: number;
+  isPublished: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,9 +1,9 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 7 (collaborateurs) terminée,
-sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
-PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5 (budget) et
-PHASE 6 (invités).
+Dernière mise à jour : 2026-08-31 — PHASE 8 (profils professionnels)
+terminée, sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2
+(création), PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5
+(budget), PHASE 6 (invités) et PHASE 7 (collaborateurs).
 
 ## Fonctionnalités terminées
 
@@ -178,10 +178,31 @@ PHASE 6 (invités).
     `inviteWeddingMemberSchema` dans `@wedding-univers/validation`.
   - Dashboard et en-tête de site pointent vers `/mon-mariage/equipe`.
 
+- **PHASE 8 — Profils professionnels (§11)** :
+  - Première fonctionnalité côté "Professionnel" (tout le développement
+    précédent servait le côté "Couple"). Confirme la décision PHASE 1 :
+    pas de champ "type de compte" — un utilisateur devient professionnel
+    en créant un profil `vendors`, exactement comme il devient couple en
+    créant un `weddings`. `/compte` propose désormais les deux chemins.
+  - `/pro/profil/creer` : formulaire de création (nom, accroche,
+    description, ville, zone de déplacement, expérience, capacité,
+    métiers). Un seul profil par utilisateur (redirection si déjà
+    existant, même schéma que `/mon-mariage/creer`).
+  - `/pro/profil` : tableau de bord du professionnel — statut publié/
+    brouillon avec bascule, détails du profil (lecture seule, comme pour
+    le mariage — voir Décisions techniques), gestion des métiers,
+    prestations/tarifs, zones d'intervention et disponibilités
+    (ajout/suppression pour chacun).
+  - S'appuie entièrement sur les policies RLS `vendors`/`vendor_*` déjà
+    présentes depuis la PHASE 0 (`owns_vendor`, visibilité publique
+    conditionnée à `is_published`) — aucune nouvelle policy nécessaire.
+  - `Vendor.isPublished` ajouté à `@wedding-univers/types` (champ manquant
+    du type malgré la colonne déjà en base depuis la PHASE 0).
+
 ## En cours
 
-Rien — la PHASE 7 est terminée. Prochaine étape : PHASE 8 (profils
-professionnels).
+Rien — la PHASE 8 est terminée. Prochaine étape : PHASE 9
+(recherche/filtres).
 
 ## Problèmes connus / limitations assumées
 
@@ -326,6 +347,26 @@ professionnels).
   à la base pourrait donc encore vider les admins d'un mariage. Acceptable
   pour la V1 (aucun accès direct à la base prévu en dehors de l'admin
   Supabase du projet) ; à durcir avec un trigger si besoin plus tard.
+- **Pas d'édition des champs principaux du profil pro après création**
+  (nom, accroche, description, ville, zone de déplacement, expérience,
+  capacité) : même compromis assumé que pour `weddings` en PHASE 2/3 —
+  aucune des deux entités n'a encore d'écran d'édition des champs de
+  création. Un futur "modifier mon mariage / mon profil pro" couvrirait
+  les deux d'un coup plutôt que d'être construit deux fois séparément.
+- **Disponibilités = uniquement des dates connues** : une ligne
+  `vendor_availability` n'est créée que pour une date explicitement
+  marquée disponible ou indisponible ; l'absence de ligne signifie
+  "inconnu", pas "disponible par défaut" — cohérent avec
+  `packages/matching` qui traite `isAvailableOnDate: null` comme un cas à
+  part (score neutre 0.5, "Disponibilité inconnue à cette date."), pas
+  comme une disponibilité positive.
+- **Tags de contexte du portfolio pas encore utilisés** :
+  `VENDOR_CONTEXT_TAGS` (mariage/cérémonie/réception/fiançailles,
+  `packages/config`) et `vendor_categories.parent_id` existent en base et
+  dans le seed depuis la PHASE 0, mais ne servent qu'au moment de tagger
+  un élément de portfolio (§13) — hors périmètre PHASE 8, qui ne gère que
+  les métiers de premier niveau (`VENDOR_PROFESSIONS`). Utilisés en
+  PHASE 10.
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs
@@ -367,9 +408,7 @@ professionnels).
 
 ## Prochaine étape
 
-**PHASE 8 — Profils professionnels** : création/édition d'un profil
-prestataire public (`vendors` + tables associées, déjà en base depuis la
-PHASE 0 — catégories hiérarchiques, prestations/tarifs, zone
-d'intervention, disponibilités, portfolio). Première fonctionnalité
-côté "Professionnel" (jusqu'ici tout le développement a servi le côté
-"Couple").
+**PHASE 9 — Recherche/filtres** : page de recherche de prestataires côté
+couple (catégorie, localisation/distance, prix, style, disponibilité,
+avis, gamme — `vendorSearchFiltersSchema` déjà défini en PHASE 0),
+première vue publique consommant les profils publiés créés en PHASE 8.
