@@ -169,6 +169,9 @@ export default async function MonMariagePage() {
           ) : (
             <p className="text-sm text-ink-soft">Budget global non défini.</p>
           )}
+          <a href="/mon-mariage/budget" className="mt-3 inline-block text-xs font-medium text-gold hover:underline">
+            Voir le détail des postes →
+          </a>
         </Card>
       </div>
 

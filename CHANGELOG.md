@@ -3,7 +3,20 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 4 : Tâches et planning
+## [Unreleased] — PHASE 5 : Budget
+
+### Added
+
+- `/mon-mariage/budget` (§8) : résumé global (vue `budget_summary` —
+  total, dépensé, restant, engagé, % utilisé) et liste des postes
+  budgétaires par catégorie, avec alerte visuelle en cas de dépassement.
+- Création, édition (prévu/dépensé) et suppression de postes budgétaires
+  (Server Actions), réservées aux rôles autorisés (`budget.manage`), RLS
+  en filet de sécurité.
+- Dashboard (`/mon-mariage`) et en-tête de site : lien vers
+  `/mon-mariage/budget`.
+
+## PHASE 4 : Tâches et planning
 
 ### Added
 

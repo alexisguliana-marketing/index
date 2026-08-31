@@ -1,8 +1,8 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-30 — PHASE 4 (tâches et planning) terminée,
-sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création) et
-PHASE 3 (dashboard).
+Dernière mise à jour : 2026-08-31 — PHASE 5 (budget) terminée, sur PHASE 0
+(fondation), PHASE 1 (authentification), PHASE 2 (création), PHASE 3
+(dashboard) et PHASE 4 (tâches et planning).
 
 ## Fonctionnalités terminées
 
@@ -124,9 +124,26 @@ PHASE 3 (dashboard).
   - Tests ajoutés pour `generateDefaultChecklist`
     (`packages/config/src/__tests__/checklist.test.ts`).
 
+- **PHASE 5 — Budget (§8)** :
+  - `/mon-mariage/budget` : résumé global (branché sur la vue
+    `budget_summary` déjà utilisée en lecture seule dans le dashboard
+    PHASE 3 — total, dépensé, restant, engagé, % utilisé) puis liste des
+    postes budgétaires (`budget_items` : catégorie, libellé, prévu,
+    dépensé, restant par poste, alerte visuelle en cas de dépassement).
+  - Création, édition (prévu/dépensé) et suppression de postes — réservées
+    aux rôles avec `budget.manage` (admin, planner) ; les autres rôles
+    (tous ont `budget.view`) voient la page en lecture seule. RLS en filet
+    de sécurité côté base dans tous les cas.
+  - Le dashboard (`/mon-mariage`) et l'en-tête de site pointent désormais
+    vers `/mon-mariage/budget` (« Voir le détail des postes → », lien
+    « Budget »).
+  - Les postes réutilisent les mêmes catégories que les tâches
+    (`task_categories`, `TASK_CATEGORIES`) — cohérent avec le schéma §29
+    qui ne prévoit pas de taxonomie budget séparée.
+
 ## En cours
 
-Rien — la PHASE 4 est terminée. Prochaine étape : PHASE 5 (budget).
+Rien — la PHASE 5 est terminée. Prochaine étape : PHASE 6 (invités).
 
 ## Problèmes connus / limitations assumées
 
@@ -212,6 +229,17 @@ Rien — la PHASE 4 est terminée. Prochaine étape : PHASE 5 (budget).
   filtre par échéance reportés à une itération future si le besoin est
   confirmé, pour ne pas construire une UI supplémentaire non demandée
   explicitement à ce stade.
+- **Postes budgétaires non liés à un prestataire** : `budget_items` n'a pas
+  de colonne `vendor_id` en V1 — les profils prestataires n'existent pas
+  avant PHASE 8. Le rapprochement poste ↔ prestataire (ex : le poste
+  "Traiteur" pointant vers le prestataire réservé) est un enrichissement
+  naturel à ajouter en PHASE 8/12, pas une régression de la PHASE 5.
+- **"Engagé" (`budget_summary.committed`)** : défini en base (PHASE 0)
+  comme la somme des montants *prévus* des postes pas encore payés
+  (`spent = 0`) — affiché tel quel sur `/mon-mariage/budget`. Dès qu'un
+  poste a un paiement partiel (`spent > 0`), tout son "prévu" sort de
+  "engagé" ; c'est une approximation simple assumée pour la V1 plutôt
+  qu'un vrai suivi engagé/payé partiel, qui demanderait une colonne dédiée.
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs
@@ -253,8 +281,7 @@ Rien — la PHASE 4 est terminée. Prochaine étape : PHASE 5 (budget).
 
 ## Prochaine étape
 
-**PHASE 5 — Budget** : UI pour les postes budgétaires (`budget_items` :
-prévu/dépensé par catégorie), branchée sur la vue `budget_summary` déjà
-utilisée en lecture seule dans le dashboard (PHASE 3) et sur les
-catégories déjà en place (`task_categories`, réutilisées pour le budget
-par le schéma §29).
+**PHASE 6 — Invités** : liste des invités (`guests`, déjà en base et
+typée), groupes (famille/amis/collègues/témoins/autres), statut RSVP,
+accompagnant, enfants, repas, hébergement — UI similaire aux PHASE 4/5
+(page dédiée, permissions `guests.manage` déjà définies en PHASE 0).
