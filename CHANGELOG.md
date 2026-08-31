@@ -3,6 +3,23 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
+## [Unreleased] — PHASE 15 : Application mobile
+
+### Added
+
+- Navigation `expo-router` (fichier-based) dans `apps/mobile`, remplaçant
+  `App.tsx`/`index.ts`.
+- Client Supabase mobile (`@supabase/supabase-js` + AsyncStorage),
+  dégradation gracieuse identique au web.
+- Écrans connexion, inscription, tableau de bord mariage minimal
+  (couple, date, lieu, budget, invités, déconnexion).
+- Validé avec `expo export --platform ios` et `tsc --noEmit`.
+
+### Notes
+
+- Périmètre volontairement réduit à l'authentification + un tableau de
+  bord minimal — pas de parité complète avec le web dans cette phase.
+
 ## [Unreleased] — PHASE 14 : Notifications
 
 ### Added

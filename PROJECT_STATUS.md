@@ -1,7 +1,7 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 14 (notifications) terminée,
-sur PHASE 0 (fondation) à PHASE 13 (messagerie) incluses.
+Dernière mise à jour : 2026-08-31 — PHASE 15 (application mobile)
+terminée, sur PHASE 0 (fondation) à PHASE 14 (notifications) incluses.
 
 ## Fonctionnalités terminées
 
@@ -331,10 +331,39 @@ sur PHASE 0 (fondation) à PHASE 13 (messagerie) incluses.
     (mobile arrive en PHASE 15). Les notifications web fonctionnent
     dès aujourd'hui.
 
+- **PHASE 15 — Application mobile (rattrapage prévu depuis la PHASE 1)** :
+  - Navigation : `expo-router` (fichier-based, symétrique de l'App Router
+    web) — `apps/mobile/App.tsx`/`index.ts` remplacés par `app/_layout.tsx`
+    + routes fichier. `package.json` "main" → `expo-router/entry`.
+  - Client Supabase mobile (`lib/supabase.ts`) : `@supabase/supabase-js` +
+    session persistée via `@react-native-async-storage/async-storage`
+    (pas de split client/serveur comme `@supabase/ssr` — un seul client,
+    utilisé partout). Même dégradation gracieuse que le web
+    (`hasSupabaseEnv`, `EXPO_PUBLIC_SUPABASE_URL`/`_ANON_KEY`,
+    `apps/mobile/.env.example`).
+  - `lib/auth-context.tsx` + garde de navigation dans `_layout.tsx` :
+    redirige vers `/(auth)/connexion` si pas de session, vers
+    `/mon-mariage` sinon.
+  - Écrans : `(auth)/connexion`, `(auth)/inscription` (réutilisent
+    `signInSchema`/`signUpSchema` de `@wedding-univers/validation`,
+    identiques au web), `mon-mariage` (résumé : couple, date, lieu,
+    budget, invités, déconnexion).
+  - Validé avec `expo export --platform ios` (1178 modules, bundle
+    généré sans erreur) + `tsc --noEmit`, en plus de la résolution
+    monorepo pnpm déjà vérifiée en PHASE 0.
+  - **Périmètre volontairement réduit** : cette phase rattrape
+    l'authentification et un tableau de bord minimal — pas de parité
+    complète avec les 14 phases web (tâches, invités détaillés, budget
+    éditable, messagerie, etc. restent web-only pour l'instant). La
+    création de mariage sur mobile n'est pas construite non plus (l'écran
+    affiche un message clair plutôt que de bloquer silencieusement).
+    Porter chaque fonctionnalité web sur mobile est un chantier à part,
+    hors de ce qui était raisonnable dans une seule phase.
+
 ## En cours
 
-Rien — la PHASE 14 est terminée. Prochaine étape : PHASE 15 (application
-mobile).
+Rien — la PHASE 15 est terminée. Prochaine étape : PHASE 16 (tests,
+sécurité, optimisation) — dernière phase du découpage MVP.
 
 ## Problèmes connus / limitations assumées
 
@@ -382,8 +411,11 @@ mobile).
   sont faiblement typés (pas de `Database` généré, puisqu'aucun projet
   distant n'existe). Lancer `supabase gen types typescript` une fois un
   projet connecté, et le brancher dans `createClient<Database>(...)`.
-- **apps/mobile n'a pas encore d'authentification** — décision assumée, voir
-  Décisions techniques.
+- **apps/mobile a l'authentification depuis la PHASE 15** (connexion,
+  inscription, session persistée), mais pas encore le reste : création de
+  mariage, tâches, invités, budget éditable, messagerie restent web-only.
+  Non testé contre un vrai projet Supabase (même limitation générale que
+  le web — voir plus haut), mais validé par `expo export` + `tsc`.
 - **Déploiement Vercel (preview manuel, hors git)** : un premier essai a
   échoué (`npm install` a été utilisé par défaut, incompatible avec le
   protocole `workspace:*` de pnpm). Corrigé en forçant `installCommand` à
@@ -582,11 +614,10 @@ mobile).
 - **Package manager** : pnpm (workspaces natifs, rapide, bien supporté par
   Expo/Metro dès SDK 49+ sans configuration `metro.config.js` custom —
   vérifié : la détection du monorepo est automatique).
-- **apps/mobile** n'utilise pas encore de librairie de navigation
-  (React Navigation / Expo Router) : hors périmètre de la PHASE 0, à
-  ajouter en PHASE 15 (ou plus tôt si une phase business mobile le
-  nécessite avant).
-- **PHASE 1 implémentée web uniquement.** Le découpage MVP du cahier des
+- **apps/mobile utilise `expo-router` depuis la PHASE 15** (navigation
+  fichier-based, symétrique de l'App Router web).
+- **PHASE 1 implémentée web uniquement à l'origine, mobile rattrapé en
+  PHASE 15.** Le découpage MVP du cahier des
   charges liste les phases métier (1 à 14) séparément de « PHASE 15
   Application mobile » : lu comme un séquencement délibéré (construire
   chaque fonctionnalité sur le web d'abord, porter sur mobile en fin de
@@ -610,8 +641,6 @@ mobile).
 
 ## Prochaine étape
 
-**PHASE 15 — Application mobile** : navigation (Expo Router), client
-Supabase mobile (AsyncStorage), écrans d'authentification puis un
-tableau de bord mariage minimal dans `apps/mobile` — le rattrapage
-explicitement prévu depuis la PHASE 1 (« PHASE 1 implémentée web
-uniquement »).
+**PHASE 16 — Tests, sécurité, optimisation** : dernière phase du
+découpage MVP — revue de sécurité, tests complémentaires, validation
+complète du monorepo, clôture de la documentation.

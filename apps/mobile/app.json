@@ -3,7 +3,9 @@
     "name": "Wedding Univers",
     "slug": "wedding-univers",
     "version": "1.0.0",
+    "scheme": "weddinguniversmobile",
     "orientation": "portrait",
+    "plugins": ["expo-router"],
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
