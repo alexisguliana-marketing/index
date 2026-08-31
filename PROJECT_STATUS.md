@@ -1,9 +1,10 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 8 (profils professionnels)
-terminée, sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2
-(création), PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5
-(budget), PHASE 6 (invités) et PHASE 7 (collaborateurs).
+Dernière mise à jour : 2026-08-31 — PHASE 9 (recherche/filtres) terminée,
+sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
+PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5 (budget),
+PHASE 6 (invités), PHASE 7 (collaborateurs) et PHASE 8 (profils
+professionnels).
 
 ## Fonctionnalités terminées
 
@@ -199,10 +200,32 @@ terminée, sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2
   - `Vendor.isPublished` ajouté à `@wedding-univers/types` (champ manquant
     du type malgré la colonne déjà en base depuis la PHASE 0).
 
+- **PHASE 9 — Recherche/filtres (§14)** :
+  - `/prestataires` : recherche publique (accessible sans connexion, RLS
+    `to authenticated, anon` déjà en place PHASE 0) des prestataires
+    **publiés**, filtrable par métier, ville, prix max, note minimale et
+    disponibilité à une date. Formulaire GET simple (pas de JS requis),
+    résultats triés par note décroissante.
+  - `/prestataires/[id]` : première page publique de Wedding Univers —
+    profil détaillé en lecture seule (description, zone, expérience,
+    capacité, métiers, prestations/tarifs, zone d'intervention, prochaines
+    indisponibilités). Première route dynamique du projet
+    (`PageProps<"/prestataires/[id]">`, `params` asynchrone — convention
+    Next.js 16).
+  - Filtre disponibilité : exclut uniquement les prestataires
+    explicitement marqués indisponibles à cette date (cohérent avec la
+    sémantique "absence de ligne = inconnu" établie en PHASE 8) — ne
+    retire jamais un prestataire faute de donnée.
+  - Lien "Prestataires" ajouté à l'en-tête de site, visible que
+    l'utilisateur soit connecté ou non (contrairement aux autres liens,
+    tous réservés aux utilisateurs connectés).
+  - Testé avec `next dev` réel (les 3 routes répondent 200 et affichent
+    l'état "Configuration requise" attendu sans projet Supabase
+    connecté), en plus de typecheck/lint/build.
+
 ## En cours
 
-Rien — la PHASE 8 est terminée. Prochaine étape : PHASE 9
-(recherche/filtres).
+Rien — la PHASE 9 est terminée. Prochaine étape : PHASE 10 (portfolio).
 
 ## Problèmes connus / limitations assumées
 
@@ -367,6 +390,19 @@ Rien — la PHASE 8 est terminée. Prochaine étape : PHASE 9
   un élément de portfolio (§13) — hors périmètre PHASE 8, qui ne gère que
   les métiers de premier niveau (`VENDOR_PROFESSIONS`). Utilisés en
   PHASE 10.
+- **Filtres distance et style reportés, filtre "gamme" absent** :
+  `vendorSearchFiltersSchema` (PHASE 0) déclare aussi `maxDistanceKm` et
+  `style`, non exposés dans le formulaire PHASE 9. Distance : calcul
+  nécessiterait des coordonnées lat/lng pour le mariage, or `weddings`
+  n'a qu'un champ `location` en texte libre (pas de géocodage prévu en
+  V1). Style : c'est un attribut des éléments de portfolio
+  (`vendor_portfolio_items.style`), pas du prestataire lui-même — n'a de
+  sens qu'une fois le portfolio construit (PHASE 10). Gamme (niveau de
+  budget) : n'existe pas comme colonne sur `vendors` dans le schéma §29 ;
+  se déduirait plutôt d'une fourchette de prix sur les prestations,
+  non implémenté pour rester dans le périmètre de cette phase.
+  Ces trois filtres restent dans le schéma de validation, prêts à être
+  branchés dès que leurs données sous-jacentes existent.
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs
@@ -408,7 +444,8 @@ Rien — la PHASE 8 est terminée. Prochaine étape : PHASE 9
 
 ## Prochaine étape
 
-**PHASE 9 — Recherche/filtres** : page de recherche de prestataires côté
-couple (catégorie, localisation/distance, prix, style, disponibilité,
-avis, gamme — `vendorSearchFiltersSchema` déjà défini en PHASE 0),
-première vue publique consommant les profils publiés créés en PHASE 8.
+**PHASE 10 — Portfolio** : upload et gestion des médias
+(`vendor_portfolio_items` + `media`, buckets de stockage déjà en place
+PHASE 0), tagging par style/service/contexte (`VENDOR_CONTEXT_TAGS`),
+affichage du portfolio sur `/prestataires/[id]` — première fonctionnalité
+à toucher au stockage de fichiers (Supabase Storage) dans ce projet.

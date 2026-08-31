@@ -3,7 +3,18 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 8 : Profils professionnels
+## [Unreleased] — PHASE 9 : Recherche/filtres
+
+### Added
+
+- `/prestataires` (§14) : recherche publique de prestataires publiés,
+  filtrable par métier, ville, prix max, note minimale et disponibilité.
+- `/prestataires/[id]` : première page publique de profil détaillé
+  (description, prestations/tarifs, zone d'intervention, prochaines
+  indisponibilités) — première route dynamique du projet.
+- Lien "Prestataires" dans l'en-tête de site, accessible sans connexion.
+
+## PHASE 8 : Profils professionnels
 
 ### Added
 

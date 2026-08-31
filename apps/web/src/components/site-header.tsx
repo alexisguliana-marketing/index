@@ -12,6 +12,9 @@ export async function SiteHeader() {
         Wedding Univers
       </Link>
       <nav className="flex items-center gap-6 text-sm text-ink-soft">
+        <Link href="/prestataires" className="hover:text-gold">
+          Prestataires
+        </Link>
         {user ? (
           <>
             <Link href="/mon-mariage" className="hover:text-gold">
