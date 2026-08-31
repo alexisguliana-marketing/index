@@ -1,8 +1,87 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — **PHASE 16 (tests, sécurité,
-optimisation) terminée : les 17 phases du découpage MVP (PHASE 0 à
-PHASE 16) sont maintenant toutes livrées.**
+Dernière mise à jour : 2026-08-31 — **Les 17 phases du découpage MVP
+(PHASE 0 à PHASE 16) sont livrées, ET un vrai projet Supabase est
+maintenant provisionné et configuré** (org `alexisguliana-marketing`,
+projet `wedding-univers`, réf. `krjzmqahbqiuulklmjgq`, région
+`eu-west-3`, plan gratuit). C'était le principal "problème connu" listé
+plus bas depuis la PHASE 0 — voir « Mise en production Supabase »
+ci-dessous pour ce qui a été fait et validé.
+
+## Mise en production Supabase
+
+- **9 migrations d'origine + 3 migrations de durcissement appliquées**
+  dans l'ordre sur le vrai projet (`apply_migration`), plus le seed de
+  référence (16 catégories de tâches, 24 catégories prestataires).
+  Confirmé : 28 tables publiques, 28 avec RLS activé (100%), 12 triggers
+  présents.
+- **`get_advisors` (sécurité) a trouvé 2 vrais problèmes**, invisibles
+  depuis la reproduction Postgres locale utilisée jusqu'ici (l'advisor
+  est une fonctionnalité hébergée par Supabase, pas un lint Postgres
+  générique) :
+  1. **ERROR** — la vue `budget_summary` n'avait pas
+     `security_invoker = true` : elle s'exécutait avec les droits de son
+     propriétaire (le rôle de migration) plutôt que de l'appelant, donc
+     n'importe quel utilisateur authentifié pouvait lire le budget de
+     *n'importe quel* mariage malgré les policies RLS sur `weddings`/
+     `budget_items`. Corrigé (`20260101000900_security_hardening.sql`).
+  2. **WARN** — `find_invitable_user` (PHASE 7) était exécutable par le
+     rôle `anon` (non authentifié) en plus de `authenticated` — un
+     utilisateur non connecté aurait pu sonder des emails pour savoir
+     qui a un compte. Corrigé par un `revoke` explicite ; les fonctions
+     déclencheurs (`handle_new_*`, `refresh_vendor_rating`) ont aussi eu
+     leur `execute` révoqué pour les rôles client (elles ne peuvent de
+     toute façon s'exécuter que dans un contexte de trigger, donc aucun
+     risque réel, mais ça nettoie le rapport). Les 4 fonctions
+     d'assistance RLS (`is_wedding_member`, `current_wedding_role`,
+     `owns_vendor`, `is_conversation_member`) restent volontairement
+     exécutables par `anon`/`authenticated` : les policies RLS les
+     appellent en tant que rôle appelant, donc leur retirer `execute`
+     casserait la quasi-totalité de l'application.
+  3. **Vérifié après correction** : l'audit sécurité ne remonte plus que
+     les 4 fonctions d'assistance RLS (attendu, nécessaire) — zéro
+     ERROR, zéro WARN évitable.
+- **`get_advisors` (performance) a trouvé 43 WARN** (35
+  `auth_rls_initplan` + 8 `multiple_permissive_policies`) sur les
+  policies RLS d'origine — un `auth.uid()` nu dans une policy est
+  ré-évalué à chaque ligne au lieu d'une fois par requête, et plusieurs
+  tables avaient une policy "lecture" et une policy "gestion (for all)"
+  qui se chevauchaient inutilement sur le SELECT. **Corrigées d'un bloc**
+  (`20260101001000_rls_performance.sql`) : tout `auth.uid()` nu enveloppé
+  en `(select auth.uid())` ; les 8 policies `for all` scindées en
+  insert/update/delete séparés (même permissions effectives, plus de
+  chevauchement). **Vérifié après correction : 0 WARN restant**, seules
+  les 49 recommandations INFO (index) subsistaient.
+- **27 index INFO manquants sur clés étrangères ajoutés**
+  (`20260101001100_missing_fk_indexes.sql`) — sans impact sur une base
+  vide aujourd'hui, mais coûtent rien à poser maintenant plutôt que d'attendre
+  une vraie charge. Les 22 "index inutilisés" restants ont été laissés
+  tels quels : c'est un artefact attendu d'une base fraîchement créée
+  sans trafic, pas un vrai signal (ce sont des index déjà volontairement
+  posés depuis la PHASE 0).
+- **Testé de bout en bout sur le vrai projet** (`execute_sql`, données de
+  test créées puis supprimées) : inscription → `handle_new_user` crée le
+  profil ; création de mariage → `handle_new_wedding` crée le membre
+  admin ; ajout d'un second membre → `handle_new_wedding_member` notifie
+  l'admin ; poste budgétaire → `budget_summary` calcule juste (testé
+  après le correctif `security_invoker`, donc validé sous sa forme
+  sécurisée). Tout a fonctionné du premier coup.
+- **Note en passant** : `weddings.created_by` référence `profiles(id)`
+  sans `on delete cascade` — supprimer le compte du créateur pendant
+  qu'il a encore un mariage échoue avec une violation de contrainte
+  plutôt que de supprimer le mariage silencieusement. Lu comme un
+  garde-fou voulu (perdre un mariage entier ne devrait jamais être un
+  effet de bord silencieux d'une suppression de compte), pas un bug.
+- **`apps/web/.env.local`** (non versionné) configuré avec l'URL et la
+  clé anon du vrai projet — testé avec `next dev` réel (les pages
+  publiques répondent sans le message "Configuration requise").
+- **Reste à faire par l'utilisateur, pas par le code** : configurer les
+  mêmes variables d'environnement (`NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY`) sur le déploiement Vercel une fois
+  celui-ci reconnecté (voir section déploiement) ; générer les types
+  TypeScript Supabase (`supabase gen types typescript`) pour remplacer
+  le typage faible actuel des appels `.from(...)` — non fait dans cette
+  passe, toujours listé comme limitation connue plus bas.
 
 ## Fonctionnalités terminées
 
@@ -411,30 +490,23 @@ vrai projet Supabase) plutôt qu'à construire.
 
 ## Problèmes connus / limitations assumées
 
-- **Aucun projet Supabase distant n'a été provisionné.** Cela impliquerait
-  de choisir une organisation/un plan de facturation — décision produit
-  laissée à l'utilisateur. `apps/web/.env.example` documente les variables
-  à renseigner une fois le projet créé. Conséquence PHASE 10 : l'upload
-  vers Supabase Storage (`/pro/portfolio`) n'a pas pu être exercé de bout
-  en bout (nécessite un vrai bucket) — seule la page elle-même a été
-  vérifiée (rendu sans erreur avec `next dev`). Le bucket
-  `vendor-portfolio` et ses policies sont bien créés par la migration
-  `20260101000400_storage_buckets.sql`, validée séparément (voir
-  ci-dessous). **À tester en conditions réelles dès qu'un projet est
-  connecté.**
+- **Résolu — un projet Supabase distant est provisionné** (voir « Mise en
+  production Supabase » en tête de fichier) : org/plan choisis (org
+  personnelle existante, plan gratuit — aucun choix ambigu à faire), 9
+  migrations d'origine + 3 de durcissement + seed appliqués, testés de
+  bout en bout. Conséquence PHASE 10 : l'upload vers Supabase Storage
+  (`/pro/portfolio`) reste néanmoins **non exercé de bout en bout** (le
+  bucket existe et ses policies sont vérifiées par lecture, mais aucun
+  fichier n'a été réellement uploadé dans cette passe) — à tester au
+  premier usage réel.
 - **Les migrations n'ont pas été validées via `supabase start` /
-  `supabase db reset`** : le sandbox de développement n'a pas de daemon
-  Docker actif (le CLI Supabase est disponible via `npx`, mais nécessite
-  Docker pour la stack locale complète). Validation alternative effectuée :
-  application manuelle des fichiers de migration (6 à ce jour) + seed sur
-  un Postgres 16 local, avec des tables `auth.*`/`storage.*` et rôles
-  `anon` / `authenticated` / `service_role` reconstitués à l'identique de
-  ce que fournit Supabase. Toutes les migrations s'appliquent sans erreur
-  et RLS est actif sur 100% des tables `public`. La fonction
-  `find_invitable_user` (PHASE 7) a été testée avec ce même Postgres local
-  (recherche insensible à la casse, aucune fuite d'email, aucun résultat
-  pour un email inconnu). **À revalider avec le vrai CLI Supabase dès que
-  Docker est disponible.**
+  `supabase db reset`** (pas de Docker dans ce sandbox) — mais elles ont
+  maintenant été validées deux fois plus fort que ça : une reproduction
+  Postgres locale (`auth.*`/`storage.*` reconstitués) pendant le
+  développement, PUIS une application réelle sur le vrai projet Supabase
+  via `apply_migration`, avec triggers exercés de bout en bout (voir
+  ci-dessus). Le doute qui restait ("est-ce que ça marchera vraiment sur
+  un vrai Supabase ?") est levé.
 - **Permissions par rôle** : RLS applique déjà les permissions §10 pour
   tâches/budget/invités (voir `supabase/migrations/..._rls_policies.sql`),
   en miroir de `packages/config/src/permissions.ts`. Garder les deux
@@ -443,23 +515,27 @@ vrai projet Supabase) plutôt qu'à construire.
   `react-dom@19.2.8` (web) et `react@19.2.3` (Expo) — normal dans un
   monorepo Next.js + Expo, chaque app garde sa propre version de React ;
   aucune action requise.
-- **Authentification non testée de bout en bout contre un vrai Supabase**
-  (même limitation que la fondation : pas de projet distant, pas de Docker
-  local). Vérifié à la place : schéma + RLS valides (PHASE 0), et
-  build/lint/typecheck/tests + rendu réel de toutes les routes auth via
-  `next dev` + `curl` sans exception serveur, avec Supabase non configuré
-  (dégradation gracieuse). **À revalider contre un vrai projet Supabase dès
-  que possible** (inscription réelle, email de confirmation, réinitialisation
-  de mot de passe).
+- **Authentification testée contre le vrai schéma, pas encore via le vrai
+  flux `next dev` + email** : les triggers `handle_new_user`/
+  `handle_new_wedding`/`handle_new_wedding_member` ont été exercés
+  directement en base (`execute_sql`) et fonctionnent ; `apps/web` est
+  bien connecté au vrai projet (`.env.local`, vérifié par `next dev` +
+  `curl` sans le message "Configuration requise"). Ce qui reste non
+  vérifié : le vrai parcours navigateur (inscription → email de
+  confirmation → clic → session), qui demande une vraie boîte mail et un
+  navigateur — hors de ce qu'un test automatisé en sandbox peut couvrir.
 - **Types Supabase non générés** : les appels `supabase.from("profiles")...`
-  sont faiblement typés (pas de `Database` généré, puisqu'aucun projet
-  distant n'existe). Lancer `supabase gen types typescript` une fois un
-  projet connecté, et le brancher dans `createClient<Database>(...)`.
+  restent faiblement typés (pas de `Database` généré). Un projet existe
+  désormais (`krjzmqahbqiuulklmjgq`) donc `supabase gen types typescript
+  --project-id krjzmqahbqiuulklmjgq` peut être lancé à tout moment — pas
+  fait dans cette passe pour rester concentré sur le provisioning et la
+  sécurité/performance de la base ; prochain pas naturel.
 - **apps/mobile a l'authentification depuis la PHASE 15** (connexion,
   inscription, session persistée), mais pas encore le reste : création de
   mariage, tâches, invités, budget éditable, messagerie restent web-only.
-  Non testé contre un vrai projet Supabase (même limitation générale que
-  le web — voir plus haut), mais validé par `expo export` + `tsc`.
+  `apps/mobile/.env.local` n'a pas été configuré avec le vrai projet dans
+  cette passe (fait pour le web uniquement) — même client/schéma, il
+  suffira de copier les mêmes valeurs sous les noms `EXPO_PUBLIC_*`.
 - **Déploiement Vercel (preview manuel, hors git)** : un premier essai a
   échoué (`npm install` a été utilisé par défaut, incompatible avec le
   protocole `workspace:*` de pnpm). Corrigé en forçant `installCommand` à

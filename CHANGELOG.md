@@ -3,6 +3,34 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
+## [Unreleased] — Mise en production Supabase
+
+### Added
+
+- Projet Supabase réel provisionné (`wedding-univers`, région
+  `eu-west-3`, plan gratuit) : 9 migrations d'origine + seed appliquées.
+- Migration `20260101000900_security_hardening.sql` : correctif
+  `security_invoker` sur la vue `budget_summary` (contournait RLS —
+  n'importe quel utilisateur authentifié pouvait lire le budget de
+  n'importe quel mariage), retrait de l'accès anonyme à
+  `find_invitable_user`.
+- Migration `20260101001000_rls_performance.sql` : toutes les policies
+  RLS avec `auth.uid()` nu réécrites en `(select auth.uid())`, policies
+  "for all" scindées pour éliminer les doublons SELECT — 43 avertissements
+  de performance corrigés.
+- Migration `20260101001100_missing_fk_indexes.sql` : 27 index sur clés
+  étrangères non couvertes.
+- `apps/web/.env.local` (non versionné) configuré avec le vrai projet.
+
+### Verified
+
+- Testé de bout en bout sur le vrai projet (inscription, création de
+  mariage, ajout de membre, notification, calcul du budget) puis données
+  de test supprimées.
+- Audit sécurité final : zéro ERROR, zéro WARN évitable.
+- Audit performance final : zéro WARN (43 → 0), 49 recommandations INFO
+  restantes (index sur base vide, sans impact).
+
 ## [Unreleased] — PHASE 16 : Tests, sécurité, optimisation
 
 ### Added
