@@ -1,8 +1,8 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 5 (budget) terminée, sur PHASE 0
-(fondation), PHASE 1 (authentification), PHASE 2 (création), PHASE 3
-(dashboard) et PHASE 4 (tâches et planning).
+Dernière mise à jour : 2026-08-31 — PHASE 6 (invités) terminée, sur
+PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
+PHASE 3 (dashboard), PHASE 4 (tâches et planning) et PHASE 5 (budget).
 
 ## Fonctionnalités terminées
 
@@ -141,9 +141,24 @@ Dernière mise à jour : 2026-08-31 — PHASE 5 (budget) terminée, sur PHASE 0
     (`task_categories`, `TASK_CATEGORIES`) — cohérent avec le schéma §29
     qui ne prévoit pas de taxonomie budget séparée.
 
+- **PHASE 6 — Invités (§9)** :
+  - `/mon-mariage/invites` : liste des invités avec groupe
+    (famille/amis/collègues/témoins/autres), statut RSVP (en
+    attente/confirmé/décliné), accompagnant, nombre d'enfants,
+    hébergement, préférence repas, email/téléphone. Résumé en tête de
+    page (total enregistré, répartition RSVP, total de personnes
+    attendues en comptant accompagnants et enfants).
+  - Création d'invité et changement rapide de statut RSVP (Server
+    Actions), réservés aux rôles avec `guests.manage` (admin, planner,
+    guest_manager) ; les autres membres voient la liste en lecture seule
+    (RLS : tout membre du mariage peut lire). RLS en filet de sécurité
+    dans tous les cas.
+  - Dashboard (`/mon-mariage`) et en-tête de site pointent désormais vers
+    `/mon-mariage/invites`.
+
 ## En cours
 
-Rien — la PHASE 5 est terminée. Prochaine étape : PHASE 6 (invités).
+Rien — la PHASE 6 est terminée. Prochaine étape : PHASE 7 (collaborateurs).
 
 ## Problèmes connus / limitations assumées
 
@@ -240,6 +255,20 @@ Rien — la PHASE 5 est terminée. Prochaine étape : PHASE 6 (invités).
   poste a un paiement partiel (`spent > 0`), tout son "prévu" sort de
   "engagé" ; c'est une approximation simple assumée pour la V1 plutôt
   qu'un vrai suivi engagé/payé partiel, qui demanderait une colonne dédiée.
+- **Pas d'édition complète d'un invité après création** : seul le statut
+  RSVP se modifie en un clic (pending/confirmed/declined) ; les autres
+  champs (accompagnant, enfants, repas, hébergement, coordonnées) ne sont
+  éditables qu'à la création. Même compromis que pour les tâches — un
+  invité mal saisi se supprime et se recrée pour l'instant. Une vraie
+  édition inline viendra si le besoin se confirme à l'usage.
+- **`guests.view` n'existe pas dans la matrice de permissions** : la
+  lecture de la liste d'invités n'est pas gérée par
+  `packages/config/src/permissions.ts` (contrairement au budget) mais
+  directement par la policy RLS "members read the guest list" — tout
+  membre du mariage peut voir la liste, seul `guests.manage` (admin,
+  planner, guest_manager) est dans la matrice pour les actions d'écriture.
+  Cohérent avec §10 qui ne liste pas de droit de lecture distinct pour les
+  invités.
 - **Assignation de tâche à un collaborateur** : la colonne
   `assignee_member_id` existe déjà en base (PHASE 0) mais n'est pas encore
   exposée dans le formulaire de création — la gestion des collaborateurs
@@ -281,7 +310,9 @@ Rien — la PHASE 5 est terminée. Prochaine étape : PHASE 6 (invités).
 
 ## Prochaine étape
 
-**PHASE 6 — Invités** : liste des invités (`guests`, déjà en base et
-typée), groupes (famille/amis/collègues/témoins/autres), statut RSVP,
-accompagnant, enfants, repas, hébergement — UI similaire aux PHASE 4/5
-(page dédiée, permissions `guests.manage` déjà définies en PHASE 0).
+**PHASE 7 — Collaborateurs** : UI pour inviter/gérer les membres du
+Projet Mariage (`wedding_members`, rôles admin/witness/planner/
+guest_manager/member déjà définis en PHASE 0), aujourd'hui uniquement
+peuplée par le créateur via le trigger `handle_new_wedding`. Permettra
+enfin de tester en conditions réelles les contrôles `hasPermission`
+utilisés depuis la PHASE 4 (un second membre avec un rôle non-admin).

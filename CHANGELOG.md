@@ -3,7 +3,20 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
-## [Unreleased] — PHASE 5 : Budget
+## [Unreleased] — PHASE 6 : Invités
+
+### Added
+
+- `/mon-mariage/invites` (§9) : liste des invités (groupe, statut RSVP,
+  accompagnant, enfants, hébergement, repas, coordonnées) avec résumé
+  (répartition RSVP, total de personnes attendues).
+- Création d'invité et changement rapide de statut RSVP (Server Actions),
+  réservés aux rôles autorisés (`guests.manage`), RLS en filet de
+  sécurité ; lecture ouverte à tout membre du mariage.
+- Dashboard (`/mon-mariage`) et en-tête de site : lien vers
+  `/mon-mariage/invites`.
+
+## PHASE 5 : Budget
 
 ### Added
 
