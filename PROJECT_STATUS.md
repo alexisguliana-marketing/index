@@ -1,7 +1,8 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 15 (application mobile)
-terminée, sur PHASE 0 (fondation) à PHASE 14 (notifications) incluses.
+Dernière mise à jour : 2026-08-31 — **PHASE 16 (tests, sécurité,
+optimisation) terminée : les 17 phases du découpage MVP (PHASE 0 à
+PHASE 16) sont maintenant toutes livrées.**
 
 ## Fonctionnalités terminées
 
@@ -360,10 +361,53 @@ terminée, sur PHASE 0 (fondation) à PHASE 14 (notifications) incluses.
     Porter chaque fonctionnalité web sur mobile est un chantier à part,
     hors de ce qui était raisonnable dans une seule phase.
 
+- **PHASE 16 — Tests, sécurité, optimisation (dernière phase du
+  découpage MVP)** :
+  - **Revue de sécurité** : aucun `dangerouslySetInnerHTML`/`eval`/
+    `new Function` dans le code applicatif ; aucune interpolation de
+    chaîne dans une requête Supabase construite à partir d'une entrée
+    utilisateur non validée (le seul `.not("id","in", ...)` utilise des
+    UUID relus depuis la base, pas une entrée brute) ; aucune Server
+    Action ne fait confiance à un `userId` fourni par le client — toutes
+    dérivent l'identité de `supabase.auth.getUser()` côté serveur ; RLS
+    reste le filet de sécurité systématique même quand l'UI cache déjà
+    les actions non autorisées.
+  - **Audit RLS exhaustif** : script comparant chaque `create table` à
+    son `alter table ... enable row level security` et à l'existence
+    d'au moins une policy — **28 tables publiques, 28 avec RLS activé,
+    aucune sans policy**. Vérifié sur une base Postgres locale fraîche
+    avec les 9 migrations + seed appliquées d'un bloc (aucune erreur),
+    et les 12 triggers attendus (`set_*_updated_at`, `handle_new_user`,
+    `handle_new_wedding`, `handle_new_conversation`,
+    `handle_new_message`, `handle_new_wedding_member`,
+    `on_vendor_review_change`) tous présents.
+  - **Pas de secret ni de fichier `.env` commité**, pas de `console.log`
+    de debug ni de marqueur `TODO`/`FIXME` oublié dans le code applicatif
+    (vérifié par recherche exhaustive).
+  - **Nouveaux tests** (`packages/config`) : matrice de permissions
+    (`hasPermission`/`getPermissionsForRole` — cohérence interne, seul
+    `admin` invite/retire des membres, tout rôle a `budget.view`, un
+    `member` simple n'a aucune permission de gestion) et cohérence des
+    taxonomies (chaque valeur des enums `@wedding-univers/types` a bien
+    un libellé dans `@wedding-univers/config`, aucun doublon de slug) —
+    18 tests au total dans ce package, tous verts. Ces deux zones étaient
+    jusqu'ici non testées malgré leur rôle central (utilisées par RLS et
+    par la quasi-totalité des pages `/mon-mariage/*` et `/pro/*` depuis
+    la PHASE 4).
+  - **Optimisation** : pas de changement structurel — chaque phase a déjà
+    appliqué la même discipline (requêtes par lots via `.in()` plutôt que
+    des requêtes en boucle, `revalidatePath` ciblé plutôt que global).
+    Une revue dédiée n'a pas trouvé de N+1 introduit en cours de route.
+  - **Validation finale** : `pnpm -r typecheck`, `pnpm -r lint`,
+    `pnpm -r test` et `next build` (26 routes web) verts sur l'ensemble
+    du monorepo — 8 packages/apps.
+
 ## En cours
 
-Rien — la PHASE 15 est terminée. Prochaine étape : PHASE 16 (tests,
-sécurité, optimisation) — dernière phase du découpage MVP.
+Rien — les 17 phases du découpage MVP (PHASE 0 à PHASE 16) sont
+terminées. Voir « Problèmes connus / limitations assumées » pour ce qui
+reste à valider en conditions réelles (essentiellement : provisionner un
+vrai projet Supabase) plutôt qu'à construire.
 
 ## Problèmes connus / limitations assumées
 
@@ -641,6 +685,23 @@ sécurité, optimisation) — dernière phase du découpage MVP.
 
 ## Prochaine étape
 
-**PHASE 16 — Tests, sécurité, optimisation** : dernière phase du
-découpage MVP — revue de sécurité, tests complémentaires, validation
-complète du monorepo, clôture de la documentation.
+**Aucune phase du découpage MVP (PHASE 0 à PHASE 16) ne reste à faire.**
+Ce qui reste avant un vrai lancement n'est plus du développement mais des
+décisions produit/infra laissées à l'utilisateur :
+
+1. **Provisionner un projet Supabase distant** (organisation, plan de
+   facturation) et y appliquer les 9 migrations + le seed — actuellement
+   seule la validation locale (Postgres reconstitué) a été faite.
+2. **Générer les types Supabase** (`supabase gen types typescript`) une
+   fois le projet connecté, pour remplacer le typage faible actuel des
+   appels `.from(...)`.
+3. **Reconnecter le déploiement Vercel** en mode lié à GitHub (plutôt que
+   l'upload manuel utilisé en PHASE 1/2, qui a rencontré des problèmes de
+   gestionnaire de paquets — voir plus haut) une fois la branche prête à
+   être mergée.
+4. Au-delà du MVP : tout ce qui est explicitement "Hors périmètre V1"
+   dans `PROJECT_SPEC.md` (paiement, réservation intégrée, IA
+   conversationnelle...), plus les enrichissements notés au fil des
+   phases dans « Décisions techniques » (édition du mariage/profil pro,
+   matching inverse côté pro, vidéo dans le portfolio, filtres distance/
+   style/gamme, etc.).

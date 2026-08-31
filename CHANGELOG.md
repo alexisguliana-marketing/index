@@ -3,6 +3,32 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
+## [Unreleased] — PHASE 16 : Tests, sécurité, optimisation
+
+### Added
+
+- Tests de la matrice de permissions (`packages/config`) et de la
+  cohérence des taxonomies avec les enums partagés (18 tests, tous
+  verts).
+
+### Verified
+
+- Revue de sécurité : pas de `dangerouslySetInnerHTML`/`eval`, pas
+  d'interpolation de requête à partir d'entrée utilisateur non validée,
+  aucune Server Action ne fait confiance à un `userId` client.
+- Audit RLS exhaustif : 28/28 tables publiques avec RLS activé et au
+  moins une policy.
+- Chaîne complète des 9 migrations + seed validée sur Postgres local
+  (aucune erreur, 12 triggers présents).
+- `pnpm -r typecheck`, `pnpm -r lint`, `pnpm -r test`, `next build` verts
+  sur l'ensemble du monorepo.
+
+### Notes
+
+- Dernière phase du découpage MVP (PHASE 0 à PHASE 16) — toutes livrées.
+  Voir PROJECT_STATUS.md, section « Prochaine étape », pour ce qui reste
+  (décisions produit/infra, pas du développement).
+
 ## [Unreleased] — PHASE 15 : Application mobile
 
 ### Added
