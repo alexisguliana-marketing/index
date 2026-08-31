@@ -1,10 +1,7 @@
 # PROJECT_STATUS.md
 
-Dernière mise à jour : 2026-08-31 — PHASE 11 (Wedding Match) terminée,
-sur PHASE 0 (fondation), PHASE 1 (authentification), PHASE 2 (création),
-PHASE 3 (dashboard), PHASE 4 (tâches et planning), PHASE 5 (budget),
-PHASE 6 (invités), PHASE 7 (collaborateurs), PHASE 8 (profils
-professionnels), PHASE 9 (recherche/filtres) et PHASE 10 (portfolio).
+Dernière mise à jour : 2026-08-31 — PHASE 13 (messagerie) terminée, sur
+PHASE 0 (fondation) à PHASE 12 (favoris/contact) incluses.
 
 ## Fonctionnalités terminées
 
@@ -281,10 +278,38 @@ professionnels), PHASE 9 (recherche/filtres) et PHASE 10 (portfolio).
     publiques, pas de mise en relation via favoris/messagerie). Reporté
     à une itération future plutôt que bricolé. Voir Décisions techniques.
 
+- **PHASE 12 — Favoris/contact (§15, §23)** :
+  - Bouton favori (★) et formulaire de contact sur `/prestataires/[id]`,
+    visibles pour tout membre de mariage connecté. `/mon-mariage/favoris`
+    liste les prestataires favoris.
+  - Contacter un prestataire crée (ou réutilise) une conversation
+    `wedding_id`/`vendor_id` et le premier message, puis redirige vers le
+    fil (PHASE 13).
+  - Seuls les favoris de type prestataire sont gérés (pas encore les
+    photos/médias — `favorites.media_id` reste inutilisé, pas de
+    navigation "favoriser une photo" construite pour cette phase).
+- **PHASE 13 — Messagerie (§23)** :
+  - `/mon-mariage/messages` (liste) et `/mon-mariage/messages/[id]` (fil +
+    réponse) côté couple ; `/pro/messages` et `/pro/messages/[id]` côté
+    prestataire. Marquage automatique des messages lus à l'ouverture du
+    fil.
+  - Migration `20260101000700_conversation_vendor_member.sql` : trigger
+    `SECURITY DEFINER` qui ajoute automatiquement le propriétaire du
+    prestataire comme participant à la création d'une conversation — la
+    policy RLS `conversation_members` n'autorise qu'un utilisateur à
+    s'ajouter lui-même (§23), donc rien d'autre ne pouvait le faire côté
+    couple. Testé sur Postgres local (le déclencheur ajoute bien le bon
+    utilisateur).
+  - Un membre du mariage qui n'a pas initié le contact voit la
+    conversation dans la liste (RLS l'autorise via `is_wedding_member`)
+    mais doit explicitement "Rejoindre la conversation" pour lire les
+    messages (RLS `conversation_members` n'autorise que l'auto-ajout) —
+    comportement voulu, pas un bug.
+
 ## En cours
 
-Rien — la PHASE 11 est terminée. Prochaine étape : PHASE 12
-(favoris/contact).
+Rien — la PHASE 13 est terminée. Prochaine étape : PHASE 14
+(notifications).
 
 ## Problèmes connus / limitations assumées
 
@@ -554,7 +579,7 @@ Rien — la PHASE 11 est terminée. Prochaine étape : PHASE 12
 
 ## Prochaine étape
 
-**PHASE 12 — Favoris/contact** : `favorites` et `collections` (déjà en
-base, PHASE 0) pour sauvegarder prestataires/photos/inspirations par
-mariage, et un premier point de contact couple → prestataire (avant la
-vraie messagerie de la PHASE 13).
+**PHASE 14 — Notifications** : triggers SQL `SECURITY DEFINER` (mêmes
+principes que `handle_new_conversation`) pour générer de vraies
+notifications (nouveau message, membre rejoint) sans clé service role,
+plus une UI de lecture/marquage lu.

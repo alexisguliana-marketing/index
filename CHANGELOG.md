@@ -3,6 +3,27 @@
 Toutes les évolutions notables du projet Wedding Univers sont documentées
 ici, dans l'ordre chronologique inverse.
 
+## [Unreleased] — PHASE 13 : Messagerie
+
+### Added
+
+- `/mon-mariage/messages` + `/mon-mariage/messages/[id]` (couple) et
+  `/pro/messages` + `/pro/messages/[id]` (prestataire) : liste des
+  conversations, fil de discussion, réponse, marquage lu automatique.
+- Migration `20260101000700_conversation_vendor_member.sql` : trigger
+  ajoutant automatiquement le prestataire comme participant à la
+  création d'une conversation.
+- Rejoindre une conversation existante pour un membre du mariage qui
+  n'a pas initié le contact.
+
+## [Unreleased] — PHASE 12 : Favoris/contact
+
+### Added
+
+- Bouton favori et formulaire de contact sur `/prestataires/[id]`.
+- `/mon-mariage/favoris` : liste des prestataires favoris.
+- Contacter un prestataire crée la conversation et le premier message.
+
 ## [Unreleased] — PHASE 11 : Wedding Match
 
 ### Added

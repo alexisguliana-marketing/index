@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
+import { contactVendorAction, toggleFavoriteAction } from "./actions";
+
 function formatEuros(value: number): string {
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(
     value,
@@ -52,6 +54,33 @@ export default async function PrestataireDetailPage({ params }: PageProps<"/pres
     notFound();
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let weddingId: string | null = null;
+  let isFavorited = false;
+  if (user) {
+    const { data: membership } = await supabase
+      .from("wedding_members")
+      .select("wedding_id")
+      .eq("user_id", user.id)
+      .order("invited_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    weddingId = membership?.wedding_id ?? null;
+
+    if (weddingId) {
+      const { data: favorite } = await supabase
+        .from("favorites")
+        .select("id")
+        .eq("wedding_id", weddingId)
+        .eq("vendor_id", id)
+        .maybeSingle();
+      isFavorited = Boolean(favorite);
+    }
+  }
+
   const [{ data: assignments }, { data: services }, { data: locations }, { data: availability }] = await Promise.all([
     supabase.from("vendor_category_assignments").select("category_id").eq("vendor_id", id),
     supabase.from("vendor_services").select("id, name, description, price").eq("vendor_id", id).order("name"),
@@ -93,10 +122,57 @@ export default async function PrestataireDetailPage({ params }: PageProps<"/pres
       <p className="mb-2 text-xs tracking-[0.3em] text-ink-soft uppercase">Prestataire</p>
       <h1 className="mb-2 font-[family-name:var(--font-display)] text-3xl italic text-ink">{vendor.name}</h1>
       {vendor.tagline && <p className="mb-2 text-sm text-ink-soft">{vendor.tagline}</p>}
-      <p className="mb-10 text-sm text-ink-soft">
+      <p className="mb-6 text-sm text-ink-soft">
         {vendor.city ?? "Ville non renseignée"}
         {vendor.rating_average !== null && ` · ${vendor.rating_average}★ (${vendor.rating_count} avis)`}
       </p>
+
+      {weddingId ? (
+        <div className="mb-10 flex flex-col gap-4 rounded-lg border border-border bg-white p-4">
+          <form action={toggleFavoriteAction}>
+            <input type="hidden" name="vendorId" value={vendor.id} />
+            <input type="hidden" name="isFavorited" value={isFavorited.toString()} />
+            <button
+              type="submit"
+              className={`rounded-full px-4 py-1.5 text-xs font-medium transition ${
+                isFavorited ? "bg-gold/20 text-ink" : "border border-border text-ink-soft hover:border-gold"
+              }`}
+            >
+              {isFavorited ? "★ Dans mes favoris" : "☆ Ajouter aux favoris"}
+            </button>
+          </form>
+
+          <form action={contactVendorAction} className="flex flex-col gap-2">
+            <input type="hidden" name="vendorId" value={vendor.id} />
+            <label htmlFor="message" className="text-xs text-ink-soft">
+              Contacter {vendor.name}
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows={3}
+              required
+              placeholder="Bonjour, votre profil nous intéresse pour notre mariage..."
+              className="rounded-md border border-border bg-white px-3 py-2 text-sm text-ink outline-none focus:border-gold"
+            />
+            <button
+              type="submit"
+              className="self-start rounded-full bg-ink px-6 py-2 text-sm font-medium text-ivory transition hover:bg-ink-soft"
+            >
+              Envoyer
+            </button>
+          </form>
+        </div>
+      ) : (
+        !user && (
+          <p className="mb-10 text-xs text-ink-soft">
+            <a href="/connexion" className="text-gold hover:underline">
+              Connectez-vous
+            </a>{" "}
+            pour ajouter ce prestataire à vos favoris ou le contacter.
+          </p>
+        )
+      )}
 
       <div className="grid grid-cols-1 gap-4">
         <Card title="Profil">

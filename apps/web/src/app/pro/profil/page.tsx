@@ -131,12 +131,14 @@ export default async function ProfilProPage() {
         )}
       </form>
 
-      <Link
-        href="/pro/portfolio"
-        className="mb-8 inline-block text-sm font-medium text-gold hover:underline"
-      >
-        Gérer mon portfolio →
-      </Link>
+      <div className="mb-8 flex flex-col gap-1">
+        <Link href="/pro/portfolio" className="inline-block text-sm font-medium text-gold hover:underline">
+          Gérer mon portfolio →
+        </Link>
+        <Link href="/pro/messages" className="inline-block text-sm font-medium text-gold hover:underline">
+          Voir mes messages →
+        </Link>
+      </div>
 
       <div className="grid grid-cols-1 gap-4">
         <Card title="Profil">
